@@ -1,0 +1,16 @@
+.parentCont{
+    width: 80%;
+    margin: auto;
+    border-radius: 10px;
+    border: 1px solid black;
+    margin-top: 2rem;
+    padding: 1rem;
+}
+
+.menuItem{
+    text-transform: capitalize;
+}
+
+.textfield_parent > div{
+    padding : 0.5rem
+}

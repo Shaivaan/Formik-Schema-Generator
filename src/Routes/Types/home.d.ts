@@ -1,0 +1,3 @@
+interface EachKeyForm{
+    formIndex:number
+}
