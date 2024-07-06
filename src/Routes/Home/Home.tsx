@@ -1,8 +1,14 @@
-import { Box, Checkbox, FormControl, FormControlLabel, Grid, InputLabel, MenuItem, Radio, RadioGroup, Select, TextField } from "@mui/material";
+import { Box, Checkbox, FormControl, FormControlLabel, Grid, InputLabel, MenuItem, Radio, RadioGroup, Select, SelectChangeEvent, TextField } from "@mui/material";
 import "./Home.css";
 import { ArrayHelpers, FieldArray, Formik, useFormikContext } from "formik";
-import { formInitialValues, typeValue } from "../Utils/HomeUtils";
-import { stringSelectedType } from "../Utils/stringCategoryUtils";
+import { formInitialValues, setFieldValueFirstArg, typeValue } from "../Utils/HomeUtils";
+import { passwordFormUtils, stringSelectedType } from "../Utils/stringCategoryUtils";
+import { ChangeEvent, useEffect } from "react";
+
+
+const getNestedValue = (keyName:string,values:FormInitType) => {
+    return keyName.split(/[\.\[\]]+/).filter(Boolean).reduce((acc:any, part) => acc && acc[part], values);
+};
 
 export const Home = () => {
     return (
@@ -49,28 +55,48 @@ export const Home = () => {
 
 
 const EachKeyForm = ({formIndex}:EachKeyForm) => {
-    const {values} =  useFormikContext();
-    console.log(values,'dasdasd')
+    const {values,setFieldValue} =  useFormikContext<FormInitType>();
+    const eachFormValue = values['formInitialValues'][formIndex];
+    const handleCheckBoxChange = (event: React.ChangeEvent<HTMLInputElement>,fieldKey:keyof EachFormInitialValueType) => {
+        setFieldValue(setFieldValueFirstArg(formIndex,fieldKey),event.target.checked);
+      };
+
+    // const handleTypeChange=()=>{
+
+    // }
+
     return <Box className='global_column_flex'>
         <Grid container spacing={3} alignItems={'center'}>
             <Grid item lg={8} sm={6}><TextField autoComplete="off" label='Key Name' placeholder="Key Name" variant="outlined" fullWidth /></Grid>
-            <Grid item lg={2}> <FormControlLabel control={<Checkbox defaultChecked />} label="IsRequired?" /></Grid>
-            <Grid item lg={2}> <FormControlLabel control={<Checkbox defaultChecked />} label="IsNullable?" /></Grid>
+            <Grid item lg={2}> <FormControlLabel  control={<Checkbox  onChange={(event)=>handleCheckBoxChange(event,'isRequired')}/>} checked={eachFormValue.isRequired} label="IsRequired?" /></Grid>
+            <Grid item lg={2}> <FormControlLabel control={<Checkbox  onChange={(event)=>handleCheckBoxChange(event,'isNullable')} />} checked={eachFormValue.isNullable}  label="IsNullable?" /></Grid>
         </Grid>
+        {eachFormValue.isRequired && <ValidationTextFieldMessage messageKey="Required" formikKey={setFieldValueFirstArg(formIndex,'requireMessage')}/>}
         <FormControl fullWidth>
             <InputLabel id="demo-simple-select-label">Select Type</InputLabel>
             <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
-                value={''}
+                sx={{textTransform:'capitalize'}}
+                value={getNestedValue(setFieldValueFirstArg(formIndex,'type'),values)}
                 label="Select Type"
-                onChange={() => { }}
+                onChange={(event:SelectChangeEvent) => {setFieldValue(setFieldValueFirstArg(formIndex,'type'),event.target.value)}}
             >
                 {typeValue.map((type) => <MenuItem value={type} className='menuItem'>{type}</MenuItem>)}
             </Select>
         </FormControl >
-            <StringCategory />
+            <CategoryHandler type={getNestedValue(setFieldValueFirstArg(formIndex,'type'),values)}/>
     </Box>
+}
+
+
+const CategoryHandler=({type}:{type:CategoryHandlerType})=>{
+    switch (type){
+        case 'string':
+        return <StringCategory/>
+        default : 
+        return <></>
+    }
 }
 
 const StringCategory = () => {
@@ -97,28 +123,55 @@ const StringCategory = () => {
             }}
             />
         {/* <ValidationTextFieldMessage/> */}
-        <PasswordValidation/>
+        {/* <PasswordValidation/> */}
+        {/* <MinMaxLimitReusableComp/> */}
     </>
 }
 
 // String Types 
-const ValidationTextFieldMessage = ()=>{
-    const placholderLabel = "Enter Email Validation Message"
-    return <TextField placeholder={placholderLabel} label = {placholderLabel}/>
+
+
+
+const ValidationTextFieldMessage = ({messageKey,formikKey}:ValidationTextFieldMessageType)=>{
+    const {setFieldValue,values} =  useFormikContext<FormInitType>();
+    const placholderLabel = `Enter ${messageKey} Validation Message`;
+    const handleChange=(event:ChangeEvent<HTMLInputElement>)=>{
+        setFieldValue(formikKey,event.target.value);
+    }
+
+    return <TextField onChange={handleChange} value={getNestedValue(formikKey,values)} autoComplete="off" placeholder={placholderLabel}  label = {placholderLabel} fullWidth/>
 }
 
 const PasswordValidation=()=>{
     return <>
-        <Box>
-            <FormControlLabel
-                value="end"
-                control={<Checkbox />}
-                label="End"
-                labelPlacement="end"
-            />
-        </Box>    
+            <Grid container justifyContent={'space-around'}>
+               {passwordFormUtils.map((passwordUtil)=><Grid item sm={2.5}><ReusableCheckBox label={passwordUtil.label}/></Grid> )}
+            </Grid>
+        {/* <ValidationTextFieldMessage /> */}
+        </>
+}
 
+const ReusableCheckBox=({label}:ReusableCheckBoxType)=>{
+    return <FormControlLabel
+    value="end"
+    control={<Checkbox />}
+    label={label}
+    labelPlacement="end"
+/>
+}
 
-        <ValidationTextFieldMessage />
-    </>
+const MinMaxLimitReusableComp=()=>{
+    return <Grid container spacing={2}>
+        <Grid item sm={6}><CharLimitValidation/></Grid>
+        <Grid item sm={6}><CharLimitValidation/></Grid>  
+        {/* <Grid item sm={12}><ValidationTextFieldMessage /></Grid> */}
+        
+    </Grid>
+}
+
+const CharLimitValidation=()=>{
+    return <Box>
+        <ReusableCheckBox label="No Min Limit"/>
+        <TextField autoComplete="off" variant="outlined" placeholder="Enter Min Limit" label={"Enter Min Limit"} fullWidth/>
+    </Box>
 }
