@@ -1,7 +1,8 @@
 import { Box, Checkbox, FormControl, FormControlLabel, Grid, InputLabel, MenuItem, Radio, RadioGroup, Select, TextField } from "@mui/material";
 import "./Home.css";
 import { ArrayHelpers, FieldArray, Formik, useFormikContext } from "formik";
-import { formInitialValues, stringSelectedType, typeValue } from "../Utils/HomeUtils";
+import { formInitialValues, typeValue } from "../Utils/HomeUtils";
+import { stringSelectedType } from "../Utils/stringCategoryUtils";
 
 export const Home = () => {
     return (
