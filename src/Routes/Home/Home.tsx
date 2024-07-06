@@ -2,7 +2,7 @@ import { Box, Checkbox, FormControl, FormControlLabel, Grid, InputLabel, MenuIte
 import "./Home.css";
 import { ArrayHelpers, FieldArray, Formik, useFormikContext } from "formik";
 import { formInitialValues, setFieldValueFirstArg, typeValue } from "../Utils/HomeUtils";
-import { passwordFormUtils, stringSelectedType } from "../Utils/stringCategoryUtils";
+import { basicInitValue, emailInitValue, minMaxInitValue, passwordFormUtils, passwordInitValue, stringSelectedType, urlInitValue } from "../Utils/stringCategoryUtils";
 import { ChangeEvent, useEffect } from "react";
 
 
@@ -61,9 +61,17 @@ const EachKeyForm = ({formIndex}:EachKeyForm) => {
         setFieldValue(setFieldValueFirstArg(formIndex,fieldKey),event.target.checked);
       };
 
-    // const handleTypeChange=()=>{
-
-    // }
+    const handleTypeChange=(event:SelectChangeEvent)=>{
+        const value = event.target.value;
+        setFieldValue(setFieldValueFirstArg(formIndex,'type'),value);
+        switch(value){
+            case 'string':
+            setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedString'),{...basicInitValue});
+            break;
+            default:
+            setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedString'),null);
+        }
+      };
 
     return <Box className='global_column_flex'>
         <Grid container spacing={3} alignItems={'center'}>
@@ -80,26 +88,53 @@ const EachKeyForm = ({formIndex}:EachKeyForm) => {
                 sx={{textTransform:'capitalize'}}
                 value={getNestedValue(setFieldValueFirstArg(formIndex,'type'),values)}
                 label="Select Type"
-                onChange={(event:SelectChangeEvent) => {setFieldValue(setFieldValueFirstArg(formIndex,'type'),event.target.value)}}
+                onChange={handleTypeChange}
             >
                 {typeValue.map((type) => <MenuItem value={type} className='menuItem'>{type}</MenuItem>)}
             </Select>
         </FormControl >
-            <CategoryHandler type={getNestedValue(setFieldValueFirstArg(formIndex,'type'),values)}/>
+            <CategoryHandler formIndex={formIndex} type={getNestedValue(setFieldValueFirstArg(formIndex,'type'),values)}/>
     </Box>
 }
 
 
-const CategoryHandler=({type}:{type:CategoryHandlerType})=>{
+const CategoryHandler=({type,formIndex}:CategoryHandlerCompType & FormIndexType)=>{
     switch (type){
         case 'string':
-        return <StringCategory/>
+        return <StringCategory formIndex={formIndex}/>
         default : 
         return <></>
     }
 }
 
-const StringCategory = () => {
+const StringCategory = ({formIndex}:FormIndexType) => {
+    const {values,setFieldValue} = useFormikContext<FormInitType>();
+    console.log(getNestedValue(setFieldValueFirstArg(formIndex,'whenSelectedString' as fieldKeyType),values))
+    const handleStringCategoryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const stringType = (event.target as HTMLInputElement).value;
+        setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedString.type' as fieldKeyType),stringType);
+        switch(stringType){
+            case 'password':
+            setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedString'),{...passwordInitValue});  
+            break;
+
+            case 'email':
+            setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedString'),{...emailInitValue});  
+            break;
+
+            case 'url':
+            setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedString'),{...urlInitValue});  
+            break;
+
+            case 'min max':
+            setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedString'),{...minMaxInitValue});  
+            break;
+
+            default:
+            setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedString'),{...basicInitValue});      
+        }
+
+      };
     return <>
         <TextField
             variant="outlined"
@@ -114,18 +149,35 @@ const StringCategory = () => {
                     sx={{width:'100%',display:'flex',justifyContent:'space-around'}}
                     aria-labelledby="demo-controlled-radio-buttons-group"
                     name="controlled-radio-buttons-group"
-                    value={'email'}
-                    onChange={() => { }}
+                    value={getNestedValue(setFieldValueFirstArg(formIndex,'whenSelectedString.type' as fieldKeyType),values)}
+                    onChange={handleStringCategoryChange}
                     row
                 >
-                    {stringSelectedType.map((stringType) => <FormControlLabel className="menuItem" value="female" control={<Radio size="medium" />} label={stringType} />)}
+                {stringSelectedType.map((stringType) => <FormControlLabel className="menuItem" value={stringType} control={<Radio size="medium" />} label={stringType} />)}
                 </RadioGroup>
             }}
-            />
-        {/* <ValidationTextFieldMessage/> */}
-        {/* <PasswordValidation/> */}
-        {/* <MinMaxLimitReusableComp/> */}
+        />
+        <StringCategoryComponentsHandler formIndex={formIndex} stringType={getNestedValue(setFieldValueFirstArg(formIndex,'whenSelectedString.type' as fieldKeyType),values)}/>
     </>
+}
+
+const StringCategoryComponentsHandler=({stringType,formIndex} :StringCategoryComponentsHandlerType & FormIndexType)=>{
+     switch (stringType) {
+        case 'password' : 
+        return <PasswordValidation/>;    
+
+        case 'email' : 
+        return <ValidationTextFieldMessage messageKey="Email" formikKey={setFieldValueFirstArg(formIndex,'whenSelectedString.errorMessage' as fieldKeyType)}/>    
+
+        case 'url' : 
+        return <ValidationTextFieldMessage messageKey="URL" formikKey={setFieldValueFirstArg(formIndex,'whenSelectedString.errorMessage' as fieldKeyType)}/>    
+  
+        case 'min max' : 
+        return <MinMaxLimitReusableComp/>    
+
+        default:
+        return <></>
+     }
 }
 
 // String Types 
@@ -138,7 +190,6 @@ const ValidationTextFieldMessage = ({messageKey,formikKey}:ValidationTextFieldMe
     const handleChange=(event:ChangeEvent<HTMLInputElement>)=>{
         setFieldValue(formikKey,event.target.value);
     }
-
     return <TextField onChange={handleChange} value={getNestedValue(formikKey,values)} autoComplete="off" placeholder={placholderLabel}  label = {placholderLabel} fullWidth/>
 }
 
@@ -148,6 +199,7 @@ const PasswordValidation=()=>{
                {passwordFormUtils.map((passwordUtil)=><Grid item sm={2.5}><ReusableCheckBox label={passwordUtil.label}/></Grid> )}
             </Grid>
         {/* <ValidationTextFieldMessage /> */}
+        <MinMaxLimitReusableComp/>
         </>
 }
 

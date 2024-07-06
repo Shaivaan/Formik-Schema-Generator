@@ -2,6 +2,8 @@ interface EachKeyForm{
     formIndex:number
 }
 
+type fieldKeyType = keyof EachFormInitialValueType
+
 interface ReusableCheckBoxType{
     label:string
 }
@@ -24,3 +26,10 @@ interface ValidationTextFieldMessageType{
 }
 
 type CategoryHandlerType = 'string' | 'number'
+interface CategoryHandlerCompType{
+    type : CategoryHandlerType,
+}
+
+interface FormIndexType { 
+    formIndex:number
+}

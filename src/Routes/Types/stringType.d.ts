@@ -1,0 +1,3 @@
+interface StringCategoryComponentsHandlerType{
+    stringType:string
+}

@@ -9,6 +9,6 @@ const eachKeyForm = {
 
 const formInitialValues = {formInitialValues : [{...eachKeyForm}]};
 const typeValue = ['string','number'];
-const setFieldValueFirstArg = (formIndex:number,fieldKey:keyof EachFormInitialValueType)=> `formInitialValues[${formIndex}].${fieldKey}`
+const setFieldValueFirstArg = (formIndex:number,fieldKey:fieldKeyType)=> `formInitialValues[${formIndex}].${fieldKey}`
 
 export {formInitialValues,typeValue,setFieldValueFirstArg}
