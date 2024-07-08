@@ -1,12 +1,27 @@
+const minMaxLimitInitialValue = {
+    isMinLimit : true,
+    minLimit : 8,
+    isMaxLimit : false,
+    maxLimit : 8
+}    
 const stringSelectedType = ['basic','email','password','url', 'min max'];
-const errorMessage = {
-    errorMessage : ''
-}
+const errorMessage = (message:string)=> {return {errorMessage : `Please enter valid ${message}`}};
 const basicInitValue = {type:'basic'};
-const emailInitValue = {...errorMessage,type:'email'};
-const urlInitValue = {...errorMessage,type:'url'};
-const minMaxInitValue = {...errorMessage,minLimit:null,maxLimit:null,type : 'min max'};
-const passwordInitValue = {...errorMessage, isNumberRequired:false,isUpperCaseRequired: false,isLowerCaseRequired : false,isSpecialCharacterRequired:false,passwordMinLength:8,type:'password'};
+const emailInitValue = {...errorMessage('Email'),type:'email'};
+const urlInitValue = {...errorMessage('URL'),type:'url'};
+const minMaxInitValue = {...errorMessage('Limit'),minLimit:null,maxLimit:null,type : 'min max'};
+const passwordInitValue = {
+    ...errorMessage('Password'),
+     isNumberRequired:true,
+     isUpperCaseRequired: true,
+     isLowerCaseRequired : true,
+     isSpecialCharacterRequired:true,
+     type:'password',
+     ...minMaxLimitInitialValue
+    };
+
+
+
 
 const passwordFormUtils = [
     {label: 'Is Number Required?',keyName : 'isNumberRequired'},

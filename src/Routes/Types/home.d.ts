@@ -6,6 +6,8 @@ type fieldKeyType = keyof EachFormInitialValueType
 
 interface ReusableCheckBoxType{
     label:string
+    keyName:string
+    formIndex:number
 }
 
 interface EachFormInitialValueType{

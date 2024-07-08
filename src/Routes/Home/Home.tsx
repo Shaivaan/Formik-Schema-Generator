@@ -1,4 +1,4 @@
-import { Box, Checkbox, FormControl, FormControlLabel, Grid, InputLabel, MenuItem, Radio, RadioGroup, Select, SelectChangeEvent, TextField } from "@mui/material";
+import { Box, Checkbox, FormControl, FormControlLabel, Grid, InputAdornment, InputLabel, MenuItem, Radio, RadioGroup, Select, SelectChangeEvent, Switch, TextField } from "@mui/material";
 import "./Home.css";
 import { ArrayHelpers, FieldArray, Formik, useFormikContext } from "formik";
 import { formInitialValues, setFieldValueFirstArg, typeValue } from "../Utils/HomeUtils";
@@ -164,7 +164,7 @@ const StringCategory = ({formIndex}:FormIndexType) => {
 const StringCategoryComponentsHandler=({stringType,formIndex} :StringCategoryComponentsHandlerType & FormIndexType)=>{
      switch (stringType) {
         case 'password' : 
-        return <PasswordValidation/>;    
+        return <PasswordValidation formIndex={formIndex}/>;    
 
         case 'email' : 
         return <ValidationTextFieldMessage messageKey="Email" formikKey={setFieldValueFirstArg(formIndex,'whenSelectedString.errorMessage' as fieldKeyType)}/>    
@@ -173,7 +173,7 @@ const StringCategoryComponentsHandler=({stringType,formIndex} :StringCategoryCom
         return <ValidationTextFieldMessage messageKey="URL" formikKey={setFieldValueFirstArg(formIndex,'whenSelectedString.errorMessage' as fieldKeyType)}/>    
   
         case 'min max' : 
-        return <MinMaxLimitReusableComp/>    
+        // return <MinMaxLimitReusableComp formIndex={formIndex}/>    
 
         default:
         return <></>
@@ -181,9 +181,6 @@ const StringCategoryComponentsHandler=({stringType,formIndex} :StringCategoryCom
 }
 
 // String Types 
-
-
-
 const ValidationTextFieldMessage = ({messageKey,formikKey}:ValidationTextFieldMessageType)=>{
     const {setFieldValue,values} =  useFormikContext<FormInitType>();
     const placholderLabel = `Enter ${messageKey} Validation Message`;
@@ -193,37 +190,72 @@ const ValidationTextFieldMessage = ({messageKey,formikKey}:ValidationTextFieldMe
     return <TextField onChange={handleChange} value={getNestedValue(formikKey,values)} autoComplete="off" placeholder={placholderLabel}  label = {placholderLabel} fullWidth/>
 }
 
-const PasswordValidation=()=>{
+const PasswordValidation=({formIndex}: FormIndexType)=>{
+    // const {values,setFieldValue} = useFormikContext<FormInitType>();
     return <>
-            <Grid container justifyContent={'space-around'}>
-               {passwordFormUtils.map((passwordUtil)=><Grid item sm={2.5}><ReusableCheckBox label={passwordUtil.label}/></Grid> )}
-            </Grid>
-        {/* <ValidationTextFieldMessage /> */}
-        <MinMaxLimitReusableComp/>
+            <TextField
+            variant="outlined"
+            InputLabelProps={{
+                shrink: true
+            }}
+            className="textfield_parent"            
+            label='Password Security'
+            size="medium"
+            InputProps={{
+                inputComponent : ()=><Grid container justifyContent={'space-around'}>
+                {passwordFormUtils.map(({keyName,label})=><Grid item sm={2.5}><ReusableCheckBox formIndex={formIndex} label={label} keyName={`whenSelectedString.${keyName}` as fieldKeyType}/></Grid> )}
+             </Grid>
+            }}
+            />            
+        <MinMaxLimitReusableComp formIndex={formIndex} keyName="whenSelectedString."/>
+        <ValidationTextFieldMessage messageKey="Password" formikKey={setFieldValueFirstArg(formIndex,'whenSelectedString.errorMessage' as fieldKeyType)}/>
         </>
-}
+   }
 
-const ReusableCheckBox=({label}:ReusableCheckBoxType)=>{
+const ReusableCheckBox=({label,keyName,formIndex}:ReusableCheckBoxType)=>{
+    const {values,setFieldValue} = useFormikContext<FormInitType>();
+    const handlePasswordValidator = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setFieldValue(setFieldValueFirstArg(formIndex,keyName as fieldKeyType),event.target.checked);
+    };
     return <FormControlLabel
     value="end"
-    control={<Checkbox />}
+    control={<Checkbox onChange={handlePasswordValidator} checked={ getNestedValue(setFieldValueFirstArg(formIndex,keyName as fieldKeyType),values)}/>}
     label={label}
     labelPlacement="end"
 />
 }
 
-const MinMaxLimitReusableComp=()=>{
+const MinMaxLimitReusableComp=({formIndex,keyName}:FormIndexType & MinMaxLimitReusableCompType)=>{
     return <Grid container spacing={2}>
-        <Grid item sm={6}><CharLimitValidation/></Grid>
-        <Grid item sm={6}><CharLimitValidation/></Grid>  
+        <Grid item sm={6}><CharLimitValidation limit_type="min" formIndex={formIndex} keyName={keyName}/></Grid>
+        <Grid item sm={6}><CharLimitValidation limit_type="max" formIndex={formIndex} keyName={keyName}/></Grid>  
         {/* <Grid item sm={12}><ValidationTextFieldMessage /></Grid> */}
-        
     </Grid>
 }
 
-const CharLimitValidation=()=>{
+const CharLimitValidation=({limit_type,formIndex,keyName}:CharLimitValidationType & FormIndexType)=>{
+    const {values,setFieldValue} = useFormikContext<FormInitType>();
+    const changeKeyName = limit_type === 'min' ?  'isMinLimit' : 'isMaxLimit'
+    const handleLimitDisableEnableChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setFieldValue(setFieldValueFirstArg(formIndex,keyName + changeKeyName as fieldKeyType),event.target.checked);
+      };
     return <Box>
-        <ReusableCheckBox label="No Min Limit"/>
-        <TextField autoComplete="off" variant="outlined" placeholder="Enter Min Limit" label={"Enter Min Limit"} fullWidth/>
+        {/* <ReusableCheckBox label="No Min Limit"/> */}
+        <TextField
+            autoComplete="off"
+            variant="outlined"
+            placeholder="Enter Min Limit"
+            label={"Enter Min Limit"}
+            fullWidth
+            type="number"
+            disabled = {getNestedValue(setFieldValueFirstArg(formIndex,keyName + changeKeyName as fieldKeyType),values)}
+            InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                      <FormControlLabel control={<Switch onChange={handleLimitDisableEnableChange} checked = {getNestedValue(setFieldValueFirstArg(formIndex,keyName + changeKeyName as fieldKeyType),values)} defaultChecked />} label={`No ${limit_type} Limit`} />
+                  </InputAdornment>
+                )
+              }}
+        />
     </Box>
 }
