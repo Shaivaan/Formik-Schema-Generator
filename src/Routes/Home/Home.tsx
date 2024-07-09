@@ -1,10 +1,10 @@
-import { Box, Checkbox, FormControl, FormControlLabel, Grid, InputAdornment, InputLabel, MenuItem, Radio, RadioGroup, Select, SelectChangeEvent, Switch, TextField } from "@mui/material";
+import { Box, Button, Checkbox, FormControl, FormControlLabel, Grid, InputAdornment, InputLabel, MenuItem, Radio, RadioGroup, Select, SelectChangeEvent, Switch, TextField } from "@mui/material";
 import "./Home.css";
 import { ArrayHelpers, FieldArray, Formik, useFormikContext } from "formik";
-import { formInitialValues, setFieldValueFirstArg, typeValue } from "../Utils/HomeUtils";
+import { eachKeyForm, formInitialValues, setFieldValueFirstArg, typeValue } from "../Utils/HomeUtils";
 import { basicInitValue, emailInitValue, minMaxInitValue, passwordFormUtils, passwordInitValue, stringSelectedType, urlInitValue } from "../Utils/stringCategoryUtils";
-import { ChangeEvent, useEffect } from "react";
-
+import { ChangeEvent, FormEvent, useEffect } from "react";
+import { v4 as uuidv4 } from 'uuid';
 
 const getNestedValue = (keyName:string,values:FormInitType) => {
     return keyName.split(/[\.\[\]]+/).filter(Boolean).reduce((acc:any, part) => acc && acc[part], values);
@@ -12,34 +12,42 @@ const getNestedValue = (keyName:string,values:FormInitType) => {
 
 export const Home = () => {
     return (
-        <Box className="parentCont global_column_flex">
+        <Box>
             <Formik
                 initialValues={formInitialValues}
-                onSubmit={(values) => { }}
+                onSubmit={(values:FormInitType) => { 
+                    console.log(values)
+                }}
                 enableReinitialize
                 validateOnChange
                 validateOnBlur
             // validationSchema={invoiceValidationSchema}
             >
-                {(formikProps) => {
+                {({values,handleSubmit}) => {
                     return (
                         <>
                             <Box>
                                 <FieldArray
-                                    name="invoice_items_attributes"
-                                    render={(arrayHelpers: ArrayHelpers) => (
-                                        <>
-                                            {formikProps.values.formInitialValues.map(
+                                    name="formInitialValues"
+                                    render={({push}: ArrayHelpers) => (
+                                        <Box className = 'global_column_flex'>
+                                            {values.formInitialValues.map(
                                                 (_formElem, formIndex: number) => {
                                                     return (
-                                                        <Box key={formIndex}>
+                                                        <Box key={uuidv4()}>
                                                             <EachKeyForm formIndex={formIndex}/>
+                                                           
                                                             {/* <EachInvoiceForm formikProps={formikProps} formIndex={formIndex} arrayHelpers={arrayHelpers}/> */}
                                                         </Box>
                                                     );
                                                 }
                                             )}
-                                        </>
+                                            <Box className = 'parentCont global_column_flex'>
+                                             <Button fullWidth variant="contained" size="large" onClick={()=>push({...eachKeyForm})}>Add One More Key</Button>
+                                             <Button fullWidth variant="outlined" size="large" onClick={(event)=>handleSubmit(event as unknown as FormEvent<HTMLFormElement>)}>Generate Schema</Button>
+
+                                            </Box>
+                                        </Box>
                                     )}
                                 />
                             </Box>
@@ -73,7 +81,7 @@ const EachKeyForm = ({formIndex}:EachKeyForm) => {
         }
       };
 
-    return <Box className='global_column_flex'>
+    return <Box className="parentCont global_column_flex">
         <Grid container spacing={3} alignItems={'center'}>
             <Grid item lg={8} sm={6}><TextField autoComplete="off" label='Key Name' placeholder="Key Name" variant="outlined" fullWidth /></Grid>
             <Grid item lg={2}> <FormControlLabel  control={<Checkbox  onChange={(event)=>handleCheckBoxChange(event,'isRequired')}/>} checked={eachFormValue.isRequired} label="IsRequired?" /></Grid>
@@ -90,7 +98,7 @@ const EachKeyForm = ({formIndex}:EachKeyForm) => {
                 label="Select Type"
                 onChange={handleTypeChange}
             >
-                {typeValue.map((type) => <MenuItem value={type} className='menuItem'>{type}</MenuItem>)}
+                {typeValue.map((type) => <MenuItem key={uuidv4()} value={type} className='menuItem'>{type}</MenuItem>)}
             </Select>
         </FormControl >
             <CategoryHandler formIndex={formIndex} type={getNestedValue(setFieldValueFirstArg(formIndex,'type'),values)}/>
@@ -109,7 +117,6 @@ const CategoryHandler=({type,formIndex}:CategoryHandlerCompType & FormIndexType)
 
 const StringCategory = ({formIndex}:FormIndexType) => {
     const {values,setFieldValue} = useFormikContext<FormInitType>();
-    console.log(getNestedValue(setFieldValueFirstArg(formIndex,'whenSelectedString' as fieldKeyType),values))
     const handleStringCategoryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const stringType = (event.target as HTMLInputElement).value;
         setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedString.type' as fieldKeyType),stringType);
@@ -173,7 +180,10 @@ const StringCategoryComponentsHandler=({stringType,formIndex} :StringCategoryCom
         return <ValidationTextFieldMessage messageKey="URL" formikKey={setFieldValueFirstArg(formIndex,'whenSelectedString.errorMessage' as fieldKeyType)}/>    
   
         case 'min max' : 
-        // return <MinMaxLimitReusableComp formIndex={formIndex}/>    
+        return <>
+        <MinMaxLimitReusableComp formIndex={formIndex} keyName="whenSelectedString."/>
+        <ValidationTextFieldMessage messageKey="Min Max Limit" formikKey={setFieldValueFirstArg(formIndex,'whenSelectedString.errorMessage' as fieldKeyType)}/>    
+        </>
 
         default:
         return <></>
@@ -237,22 +247,22 @@ const CharLimitValidation=({limit_type,formIndex,keyName}:CharLimitValidationTyp
     const {values,setFieldValue} = useFormikContext<FormInitType>();
     const changeKeyName = limit_type === 'min' ?  'isMinLimit' : 'isMaxLimit'
     const handleLimitDisableEnableChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setFieldValue(setFieldValueFirstArg(formIndex,keyName + changeKeyName as fieldKeyType),event.target.checked);
+        setFieldValue(setFieldValueFirstArg(formIndex,keyName + changeKeyName as fieldKeyType),!event.target.checked);
       };
     return <Box>
         {/* <ReusableCheckBox label="No Min Limit"/> */}
         <TextField
             autoComplete="off"
             variant="outlined"
-            placeholder="Enter Min Limit"
-            label={"Enter Min Limit"}
+            placeholder={`Enter ${limit_type} Limit`}
+            label={`Enter ${limit_type} Limit`}
             fullWidth
             type="number"
-            disabled = {getNestedValue(setFieldValueFirstArg(formIndex,keyName + changeKeyName as fieldKeyType),values)}
+            disabled = {!getNestedValue(setFieldValueFirstArg(formIndex,keyName + changeKeyName as fieldKeyType),values)}
             InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
-                      <FormControlLabel control={<Switch onChange={handleLimitDisableEnableChange} checked = {getNestedValue(setFieldValueFirstArg(formIndex,keyName + changeKeyName as fieldKeyType),values)} defaultChecked />} label={`No ${limit_type} Limit`} />
+                      <FormControlLabel control={<Switch onChange={handleLimitDisableEnableChange} checked = {!getNestedValue(setFieldValueFirstArg(formIndex,keyName + changeKeyName as fieldKeyType),values)} defaultChecked />} label={`No ${limit_type} Limit`} />
                   </InputAdornment>
                 )
               }}

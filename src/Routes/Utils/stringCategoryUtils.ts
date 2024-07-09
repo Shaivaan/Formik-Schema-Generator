@@ -9,7 +9,7 @@ const errorMessage = (message:string)=> {return {errorMessage : `Please enter va
 const basicInitValue = {type:'basic'};
 const emailInitValue = {...errorMessage('Email'),type:'email'};
 const urlInitValue = {...errorMessage('URL'),type:'url'};
-const minMaxInitValue = {...errorMessage('Limit'),minLimit:null,maxLimit:null,type : 'min max'};
+const minMaxInitValue = {...errorMessage('Limit'),type : 'min max',...minMaxLimitInitialValue};
 const passwordInitValue = {
     ...errorMessage('Password'),
      isNumberRequired:true,
