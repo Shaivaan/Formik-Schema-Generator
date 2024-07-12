@@ -1,12 +1,12 @@
 import { Box, Button, Checkbox, FormControl, FormControlLabel, Grid, InputAdornment, InputLabel, MenuItem, Radio, RadioGroup, Select, SelectChangeEvent, Switch, TextField } from "@mui/material";
 import "./Home.css";
-import { ArrayHelpers, FieldArray, Formik, useFormikContext } from "formik";
+import { ArrayHelpers, FieldArray, Formik, useFormikContext, FormikErrors, FormikTouched } from "formik";
 import { eachKeyForm, formInitialValues, setFieldValueFirstArg, typeValue } from "../Utils/HomeUtils";
 import { basicInitValue, emailInitValue, minMaxInitValue, passwordFormUtils, passwordInitValue, stringSelectedType, urlInitValue } from "../Utils/stringCategoryUtils";
-import { ChangeEvent, FormEvent, useEffect } from "react";
-import { v4 as uuidv4 } from 'uuid';
+import { ChangeEvent, FormEvent } from "react";
+import { mainFormSchema } from "../../Components/Schema/MainFormSchema";
 
-const getNestedValue = (keyName:string,values:FormInitType) => {
+const getNestedValue = (keyName:string,values:FormInitType | FormikErrors<FormInitType> | FormikTouched<FormInitType>) => {
     return keyName.split(/[\.\[\]]+/).filter(Boolean).reduce((acc:any, part) => acc && acc[part], values);
 };
 
@@ -16,12 +16,12 @@ export const Home = () => {
             <Formik
                 initialValues={formInitialValues}
                 onSubmit={(values:FormInitType) => { 
-                    console.log(values)
+                    console.log(values);
                 }}
                 enableReinitialize
                 validateOnChange
                 validateOnBlur
-            // validationSchema={invoiceValidationSchema}
+                validationSchema={mainFormSchema}
             >
                 {({values,handleSubmit}) => {
                     return (
@@ -34,10 +34,8 @@ export const Home = () => {
                                             {values.formInitialValues.map(
                                                 (_formElem, formIndex: number) => {
                                                     return (
-                                                        <Box key={uuidv4()}>
-                                                            <EachKeyForm formIndex={formIndex}/>
-                                                           
-                                                            {/* <EachInvoiceForm formikProps={formikProps} formIndex={formIndex} arrayHelpers={arrayHelpers}/> */}
+                                                        <Box key={formIndex}>
+                                                            <EachKeyForm formIndex={formIndex}/>                                                           
                                                         </Box>
                                                     );
                                                 }
@@ -51,8 +49,6 @@ export const Home = () => {
                                     )}
                                 />
                             </Box>
-
-                            {/* Generate Schema and Add key Button */}
                         </>
                     );
                 }}
@@ -63,11 +59,12 @@ export const Home = () => {
 
 
 const EachKeyForm = ({formIndex}:EachKeyForm) => {
-    const {values,setFieldValue} =  useFormikContext<FormInitType>();
+    const {values,setFieldValue,errors,touched} =  useFormikContext<FormInitType>();
     const eachFormValue = values['formInitialValues'][formIndex];
     const handleCheckBoxChange = (event: React.ChangeEvent<HTMLInputElement>,fieldKey:keyof EachFormInitialValueType) => {
         setFieldValue(setFieldValueFirstArg(formIndex,fieldKey),event.target.checked);
       };
+    console.log(values,errors)  
 
     const handleTypeChange=(event:SelectChangeEvent)=>{
         const value = event.target.value;
@@ -81,9 +78,16 @@ const EachKeyForm = ({formIndex}:EachKeyForm) => {
         }
       };
 
+      const handleKeyNameChange=(event:ChangeEvent<HTMLInputElement>)=>{
+        setFieldValue(setFieldValueFirstArg(formIndex,'keyName'),event.target.value);
+}
+
+     const isError = getNestedValue(setFieldValueFirstArg(formIndex,'type'),touched) &&  getNestedValue(setFieldValueFirstArg(formIndex,'type'),errors)
+     const keyNameTextfieldValue = getNestedValue(setFieldValueFirstArg(formIndex,'keyName'),values)
+
     return <Box className="parentCont global_column_flex">
         <Grid container spacing={3} alignItems={'center'}>
-            <Grid item lg={8} sm={6}><TextField autoComplete="off" label='Key Name' placeholder="Key Name" variant="outlined" fullWidth /></Grid>
+            <Grid item lg={8} sm={6}><TextField error={isError} helperText={getNestedValue(setFieldValueFirstArg(formIndex,'keyName'),errors)} onChange={handleKeyNameChange} value={keyNameTextfieldValue} autoComplete="off" label='Key Name' placeholder="Key Name" variant="outlined" fullWidth /></Grid>
             <Grid item lg={2}> <FormControlLabel  control={<Checkbox  onChange={(event)=>handleCheckBoxChange(event,'isRequired')}/>} checked={eachFormValue.isRequired} label="IsRequired?" /></Grid>
             <Grid item lg={2}> <FormControlLabel control={<Checkbox  onChange={(event)=>handleCheckBoxChange(event,'isNullable')} />} checked={eachFormValue.isNullable}  label="IsNullable?" /></Grid>
         </Grid>
@@ -98,7 +102,7 @@ const EachKeyForm = ({formIndex}:EachKeyForm) => {
                 label="Select Type"
                 onChange={handleTypeChange}
             >
-                {typeValue.map((type) => <MenuItem key={uuidv4()} value={type} className='menuItem'>{type}</MenuItem>)}
+                {typeValue.map((type) => <MenuItem key={type} value={type} className='menuItem'>{type}</MenuItem>)}
             </Select>
         </FormControl >
             <CategoryHandler formIndex={formIndex} type={getNestedValue(setFieldValueFirstArg(formIndex,'type'),values)}/>
@@ -140,8 +144,10 @@ const StringCategory = ({formIndex}:FormIndexType) => {
             default:
             setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedString'),{...basicInitValue});      
         }
-
       };
+
+       
+
     return <>
         <TextField
             variant="outlined"
@@ -160,7 +166,7 @@ const StringCategory = ({formIndex}:FormIndexType) => {
                     onChange={handleStringCategoryChange}
                     row
                 >
-                {stringSelectedType.map((stringType) => <FormControlLabel className="menuItem" value={stringType} control={<Radio size="medium" />} label={stringType} />)}
+                {stringSelectedType.map((stringType,index) => <FormControlLabel key={index} className="menuItem" value={stringType} control={<Radio size="medium" />} label={stringType} />)}
                 </RadioGroup>
             }}
         />
@@ -192,12 +198,14 @@ const StringCategoryComponentsHandler=({stringType,formIndex} :StringCategoryCom
 
 // String Types 
 const ValidationTextFieldMessage = ({messageKey,formikKey}:ValidationTextFieldMessageType)=>{
-    const {setFieldValue,values} =  useFormikContext<FormInitType>();
+    const {setFieldValue,values,errors,touched} =  useFormikContext<FormInitType>();
     const placholderLabel = `Enter ${messageKey} Validation Message`;
     const handleChange=(event:ChangeEvent<HTMLInputElement>)=>{
         setFieldValue(formikKey,event.target.value);
     }
-    return <TextField onChange={handleChange} value={getNestedValue(formikKey,values)} autoComplete="off" placeholder={placholderLabel}  label = {placholderLabel} fullWidth/>
+    const errorMessage = getNestedValue(formikKey,errors);
+    const isError =  getNestedValue(formikKey,touched) && getNestedValue(formikKey,errors);
+    return <TextField error={isError} helperText={errorMessage} onChange={handleChange} value={getNestedValue(formikKey,values)} autoComplete="off" placeholder={placholderLabel}  label = {placholderLabel} fullWidth/>
 }
 
 const PasswordValidation=({formIndex}: FormIndexType)=>{
@@ -213,7 +221,7 @@ const PasswordValidation=({formIndex}: FormIndexType)=>{
             size="medium"
             InputProps={{
                 inputComponent : ()=><Grid container justifyContent={'space-around'}>
-                {passwordFormUtils.map(({keyName,label})=><Grid item sm={2.5}><ReusableCheckBox formIndex={formIndex} label={label} keyName={`whenSelectedString.${keyName}` as fieldKeyType}/></Grid> )}
+                {passwordFormUtils.map(({keyName,label})=><Grid key={keyName} item sm={2.5}><ReusableCheckBox formIndex={formIndex} label={label} keyName={`whenSelectedString.${keyName}` as fieldKeyType}/></Grid> )}
              </Grid>
             }}
             />            

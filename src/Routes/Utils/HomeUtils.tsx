@@ -1,4 +1,5 @@
 const eachKeyForm = {
+    keyName:null,
     isRequired:false,
     isNullable:false,
     type : '',

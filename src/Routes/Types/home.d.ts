@@ -11,6 +11,7 @@ interface ReusableCheckBoxType{
 }
 
 interface EachFormInitialValueType{
+    keyName: null | string
     isRequired:boolean
     isNullable:boolean
     type : string

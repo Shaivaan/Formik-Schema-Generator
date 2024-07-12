@@ -11,3 +11,11 @@ interface CharLimitValidationType{
 interface MinMaxLimitReusableCompType{
     keyName:string
 }
+
+
+interface MinMaxLimitType{
+    minLimit : number
+    maxLimit : number
+    isMinLimit : boolean
+    isMaxLimit : boolean
+}
