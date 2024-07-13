@@ -1,8 +1,8 @@
 const minMaxLimitInitialValue = {
     isMinLimit : true,
-    minLimit : 8,
+    minLimit : '8',
     isMaxLimit : false,
-    maxLimit : 8
+    maxLimit : '10'
 }    
 const stringSelectedType = ['basic','email','password','url', 'min max'];
 const errorMessage = (message:string)=> {return {errorMessage : `Please enter valid ${message}`}};

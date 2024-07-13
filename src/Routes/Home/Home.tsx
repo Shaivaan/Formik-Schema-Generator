@@ -252,13 +252,20 @@ const MinMaxLimitReusableComp=({formIndex,keyName}:FormIndexType & MinMaxLimitRe
 }
 
 const CharLimitValidation=({limit_type,formIndex,keyName}:CharLimitValidationType & FormIndexType)=>{
-    const {values,setFieldValue} = useFormikContext<FormInitType>();
-    const changeKeyName = limit_type === 'min' ?  'isMinLimit' : 'isMaxLimit'
+    const {values,setFieldValue,errors,touched} = useFormikContext<FormInitType>();
+    const changeKeyName = limit_type === 'min' ?  'isMinLimit' : 'isMaxLimit';
     const handleLimitDisableEnableChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setFieldValue(setFieldValueFirstArg(formIndex,keyName + changeKeyName as fieldKeyType),!event.target.checked);
-      };
+    };
+    const minMaxKey = limit_type  === 'min' ? 'minLimit'   : 'maxLimit';
+    let minMaxValue = getNestedValue(setFieldValueFirstArg(formIndex,keyName + minMaxKey as fieldKeyType),values);
+    const handleMinMaxLimitHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setFieldValue(setFieldValueFirstArg(formIndex,keyName + minMaxKey as fieldKeyType),event.target.value);
+      }; 
+      
+    const isError = getNestedValue(setFieldValueFirstArg(formIndex,keyName + minMaxKey as fieldKeyType),touched) &&  getNestedValue(setFieldValueFirstArg(formIndex,keyName + minMaxKey as fieldKeyType),errors)
+
     return <Box>
-        {/* <ReusableCheckBox label="No Min Limit"/> */}
         <TextField
             autoComplete="off"
             variant="outlined"
@@ -266,6 +273,10 @@ const CharLimitValidation=({limit_type,formIndex,keyName}:CharLimitValidationTyp
             label={`Enter ${limit_type} Limit`}
             fullWidth
             type="number"
+            value={minMaxValue}
+            error={isError}
+            helperText={isError}
+            onChange={handleMinMaxLimitHandler}
             disabled = {!getNestedValue(setFieldValueFirstArg(formIndex,keyName + changeKeyName as fieldKeyType),values)}
             InputProps={{
                 endAdornment: (
