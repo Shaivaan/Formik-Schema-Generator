@@ -19,3 +19,19 @@ interface MinMaxLimitType{
     isMinLimit : boolean
     isMaxLimit : boolean
 }
+
+interface ErorMessageAndType{
+    type : string
+    errorMessage : string
+}
+
+interface PasswordMessageAndType extends ErorMessageAndType{
+        isNumberRequired: boolean,
+        isUpperCaseRequired: boolean,
+        isLowerCaseRequired: boolean,
+        isSpecialCharacterRequired: boolean,
+        isMinLimit: boolean,
+        minLimit: number,
+        isMaxLimit: boolean,
+        maxLimit: number
+}

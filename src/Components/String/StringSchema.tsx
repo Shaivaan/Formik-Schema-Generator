@@ -74,11 +74,4 @@ const urlSchema = Yup.object().shape({
 })
 
 
-
-
-  
-
-
-
-
 export {stringSchema}
