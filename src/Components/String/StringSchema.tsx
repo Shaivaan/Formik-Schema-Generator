@@ -55,7 +55,7 @@ const passwordSchema = Yup.object().shape({
 
 
 const minMaxSchema = Yup.object().shape({
-    type: Yup.string().oneOf(['min_max']).required(),
+    type: Yup.string().oneOf(['min max']).required(),
     errorMessage: Yup.string().required('Limit Validation Message is required'),
     ...limitSchema()
 })

@@ -251,7 +251,6 @@ const MinMaxLimitReusableComp=({formIndex,keyName}:FormIndexType & MinMaxLimitRe
     return <Grid container spacing={2}>
         <Grid item sm={6}><CharLimitValidation limit_type="min" formIndex={formIndex} keyName={keyName}/></Grid>
         <Grid item sm={6}><CharLimitValidation limit_type="max" formIndex={formIndex} keyName={keyName}/></Grid>  
-        {/* <Grid item sm={12}><ValidationTextFieldMessage /></Grid> */}
     </Grid>
 }
 

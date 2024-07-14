@@ -38,11 +38,18 @@ const createSchemaStringFromValues = (
             fieldSchema += passwordSchemaHandler(whenSelectedString as unknown as PasswordMessageAndType);    
             break;
 
+            case "url": 
+            fieldSchema = urlSchemaHandler(whenSelectedString as unknown as ErorMessageAndType);
+            break;
+
+            case "min max": 
+            fieldSchema += minMaxSchemaHandler(whenSelectedString as unknown as PasswordMessageAndType);
+            break;
+
             default:
             break;
         }
       }
-
       if (isNullable) {
         fieldSchema += `.nullable()`;
       }
@@ -102,6 +109,30 @@ const passwordSchemaHandler = (whenSelectedString:PasswordMessageAndType)=>{
     }
     return fieldSchema
 }
+
+const urlSchemaHandler = (whenSelectedString: ErorMessageAndType): string => {
+    return `Yup.string().url('${whenSelectedString.errorMessage}')`;
+  };
+
+  const minMaxSchemaHandler=(whenSelectedString:PasswordMessageAndType)=>{
+    let fieldSchema = "";
+    const passwordDetails = whenSelectedString as PasswordMessageAndType;
+    if (passwordDetails.isMinLimit) {
+        fieldSchema += `.min(${Number(
+          passwordDetails.minLimit
+        )}, 'Password must be at least ${
+          passwordDetails.minLimit
+        } characters long')`;
+      }
+      if (passwordDetails.isMaxLimit) {
+        fieldSchema += `.max(${Number(
+          passwordDetails.maxLimit
+        )}, 'Password must be at most ${
+          passwordDetails.maxLimit
+        } characters long')`;
+      }
+      return fieldSchema;
+  }
 
 
 export {
