@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { stringSchema } from './StringSchema';
+import { stringSchema } from '../String/StringSchema';
 
 
 const mainFormSchema = () => {

@@ -1,7 +1,7 @@
-import { Box, Button, Checkbox, FormControl, FormControlLabel, Grid, InputAdornment, InputLabel, MenuItem, Radio, RadioGroup, Select, SelectChangeEvent, Switch, TextField } from "@mui/material";
+import { Box, Button, Checkbox, FormControl, FormControlLabel, FormHelperText, Grid, InputAdornment, InputLabel, MenuItem, Radio, RadioGroup, Select, SelectChangeEvent, Switch, TextField } from "@mui/material";
 import "./Home.css";
 import { ArrayHelpers, FieldArray, Formik, useFormikContext, FormikErrors, FormikTouched } from "formik";
-import { eachKeyForm, formInitialValues, setFieldValueFirstArg, typeValue } from "../Utils/HomeUtils";
+import { createSchemaStringFromValues, eachKeyForm, formInitialValues, setFieldValueFirstArg, typeValue } from "../Utils/HomeUtils";
 import { basicInitValue, emailInitValue, minMaxInitValue, passwordFormUtils, passwordInitValue, stringSelectedType, urlInitValue } from "../Utils/stringCategoryUtils";
 import { ChangeEvent, FormEvent } from "react";
 import { mainFormSchema } from "../../Components/Schema/MainFormSchema";
@@ -17,6 +17,7 @@ export const Home = () => {
                 initialValues={formInitialValues}
                 onSubmit={(values:FormInitType) => { 
                     console.log(values);
+                    console.log(createSchemaStringFromValues(values.formInitialValues));
                 }}
                 enableReinitialize
                 validateOnChange
@@ -60,11 +61,11 @@ export const Home = () => {
 
 const EachKeyForm = ({formIndex}:EachKeyForm) => {
     const {values,setFieldValue,errors,touched} =  useFormikContext<FormInitType>();
+    console.log(errors,values)
     const eachFormValue = values['formInitialValues'][formIndex];
     const handleCheckBoxChange = (event: React.ChangeEvent<HTMLInputElement>,fieldKey:keyof EachFormInitialValueType) => {
         setFieldValue(setFieldValueFirstArg(formIndex,fieldKey),event.target.checked);
       };
-    console.log(values,errors)  
 
     const handleTypeChange=(event:SelectChangeEvent)=>{
         const value = event.target.value;
@@ -82,12 +83,13 @@ const EachKeyForm = ({formIndex}:EachKeyForm) => {
         setFieldValue(setFieldValueFirstArg(formIndex,'keyName'),event.target.value);
 }
 
-     const isError = getNestedValue(setFieldValueFirstArg(formIndex,'type'),touched) &&  getNestedValue(setFieldValueFirstArg(formIndex,'type'),errors)
+     const isKeyNameError = getNestedValue(setFieldValueFirstArg(formIndex,'keyName'),touched) &&  getNestedValue(setFieldValueFirstArg(formIndex,'keyName'),errors)
+     const isTypeError = getNestedValue(setFieldValueFirstArg(formIndex,'type'),touched) &&  getNestedValue(setFieldValueFirstArg(formIndex,'type'),errors);
      const keyNameTextfieldValue = getNestedValue(setFieldValueFirstArg(formIndex,'keyName'),values)
 
     return <Box className="parentCont global_column_flex">
         <Grid container spacing={3} alignItems={'center'}>
-            <Grid item lg={8} sm={6}><TextField error={isError} helperText={getNestedValue(setFieldValueFirstArg(formIndex,'keyName'),errors)} onChange={handleKeyNameChange} value={keyNameTextfieldValue} autoComplete="off" label='Key Name' placeholder="Key Name" variant="outlined" fullWidth /></Grid>
+            <Grid item lg={8} sm={6}><TextField error={isKeyNameError} helperText={getNestedValue(setFieldValueFirstArg(formIndex,'keyName'),errors)} onChange={handleKeyNameChange} value={keyNameTextfieldValue} autoComplete="off" label='Key Name' placeholder="Key Name" variant="outlined" fullWidth /></Grid>
             <Grid item lg={2}> <FormControlLabel  control={<Checkbox  onChange={(event)=>handleCheckBoxChange(event,'isRequired')}/>} checked={eachFormValue.isRequired} label="IsRequired?" /></Grid>
             <Grid item lg={2}> <FormControlLabel control={<Checkbox  onChange={(event)=>handleCheckBoxChange(event,'isNullable')} />} checked={eachFormValue.isNullable}  label="IsNullable?" /></Grid>
         </Grid>
@@ -101,9 +103,12 @@ const EachKeyForm = ({formIndex}:EachKeyForm) => {
                 value={getNestedValue(setFieldValueFirstArg(formIndex,'type'),values)}
                 label="Select Type"
                 onChange={handleTypeChange}
+                error={isTypeError}
             >
                 {typeValue.map((type) => <MenuItem key={type} value={type} className='menuItem'>{type}</MenuItem>)}
             </Select>
+             {isTypeError && <FormHelperText error={isTypeError}>{getNestedValue(setFieldValueFirstArg(formIndex,'type'),errors)}</FormHelperText>}
+            
         </FormControl >
             <CategoryHandler formIndex={formIndex} type={getNestedValue(setFieldValueFirstArg(formIndex,'type'),values)}/>
     </Box>

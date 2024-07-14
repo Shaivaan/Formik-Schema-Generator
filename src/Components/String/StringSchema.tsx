@@ -13,12 +13,14 @@ const stringSchema = () => Yup.lazy((value) => {
         case 'min max':
             return minMaxSchema;
         default:
-            return Yup.object().shape({
-                type: Yup.string().oneOf(['basic']).required(),
-            });
+        return basicSchema;
     }
 })
 
+
+const basicSchema = Yup.object().shape({
+    type: Yup.string().oneOf(['basic']).required(),
+});
 
 const emailSchema = Yup.object().shape({
     type: Yup.string().oneOf(['email']).required(),
