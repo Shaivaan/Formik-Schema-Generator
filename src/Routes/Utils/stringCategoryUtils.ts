@@ -19,10 +19,6 @@ const passwordInitValue = {
      type:'password',
      ...minMaxLimitInitialValue
     };
-
-
-
-
 const passwordFormUtils = [
     {label: 'Is Number Required?',keyName : 'isNumberRequired'},
     {label: 'Is Upper Case Char Required?',keyName : 'isUpperCaseRequired'},
@@ -30,4 +26,4 @@ const passwordFormUtils = [
     {label: 'Is Special Case Char Required?',keyName : 'isSpecialCharacterRequired'}
 ]
 
-export {stringSelectedType,passwordFormUtils,basicInitValue,emailInitValue,urlInitValue,minMaxInitValue,passwordInitValue};
+export {errorMessage,stringSelectedType,passwordFormUtils,basicInitValue,emailInitValue,urlInitValue,minMaxInitValue,passwordInitValue,minMaxLimitInitialValue};

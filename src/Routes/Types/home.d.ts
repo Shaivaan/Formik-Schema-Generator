@@ -16,6 +16,7 @@ interface EachFormInitialValueType{
     isNullable:boolean
     type : string
     whenSelectedString : null    
+    whenSelectedNumber: null
     requireMessage:string
 }
 
@@ -28,11 +29,20 @@ interface ValidationTextFieldMessageType{
     formikKey:string
 }
 
-type CategoryHandlerType = 'string' | 'number'
+type CategoryHandlerType = 'string' | 'number' | string
 interface CategoryHandlerCompType{
     type : CategoryHandlerType,
 }
 
 interface FormIndexType { 
     formIndex:number
+}
+
+interface KeyNameType{
+    keyName:string
+}
+
+interface LabelPlaceholderType{
+    label:string
+    placholder : string
 }

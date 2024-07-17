@@ -1,9 +1,12 @@
+import { FormikErrors, FormikTouched } from "formik";
+
 const eachKeyForm = {
   keyName: null,
   isRequired: false,
   isNullable: false,
   type: "",
   whenSelectedString: null,
+  whenSelectedNumber:null,
   requireMessage: "This Field is Required*",
 };
 
@@ -11,6 +14,11 @@ const formInitialValues = { formInitialValues: [{ ...eachKeyForm }] };
 const typeValue = ["string", "number"];
 const setFieldValueFirstArg = (formIndex: number, fieldKey: fieldKeyType) =>
   `formInitialValues[${formIndex}].${fieldKey}`;
+
+
+const getNestedValue = (keyName:string,values:FormInitType | FormikErrors<FormInitType> | FormikTouched<FormInitType>) => {
+  return keyName.split(/[\.\[\]]+/).filter(Boolean).reduce((acc:any, part) => acc && acc[part], values);
+};
 
 const createSchemaStringFromValues = (
   values: EachFormInitialValueType[]
@@ -141,4 +149,5 @@ export {
   setFieldValueFirstArg,
   eachKeyForm,
   createSchemaStringFromValues,
+  getNestedValue
 };

@@ -1,14 +1,16 @@
-import { Box, Button, Checkbox, FormControl, FormControlLabel, FormHelperText, Grid, InputAdornment, InputLabel, MenuItem, Radio, RadioGroup, Select, SelectChangeEvent, Switch, TextField } from "@mui/material";
+import { Box, Button, Checkbox, FormControl, FormControlLabel, FormHelperText, Grid, InputLabel, MenuItem, Select, SelectChangeEvent, TextField } from "@mui/material";
 import "./Home.css";
-import { ArrayHelpers, FieldArray, Formik, useFormikContext, FormikErrors, FormikTouched } from "formik";
-import { createSchemaStringFromValues, eachKeyForm, formInitialValues, setFieldValueFirstArg, typeValue } from "../Utils/HomeUtils";
-import { basicInitValue, emailInitValue, minMaxInitValue, passwordFormUtils, passwordInitValue, stringSelectedType, urlInitValue } from "../Utils/stringCategoryUtils";
+import { ArrayHelpers, FieldArray, Formik, useFormikContext } from "formik";
+import { createSchemaStringFromValues, eachKeyForm, formInitialValues, getNestedValue, setFieldValueFirstArg, typeValue } from "../Utils/HomeUtils";
+import { basicInitValue } from "../Utils/stringCategoryUtils";
 import { ChangeEvent, FormEvent } from "react";
 import { mainFormSchema } from "../../Components/Schema/MainFormSchema";
+import {  gen_num_option, num_basic_type } from "../Utils/numCategoryUtils";
+import { ValidationTextFieldMessage } from "../../Components/GeneralComponents/GeneralComponents";
+import { NumberCategory } from "../../Components/Number/NumberComp";
+import { StringCategory } from "../../Components/String/StringComp";
 
-const getNestedValue = (keyName:string,values:FormInitType | FormikErrors<FormInitType> | FormikTouched<FormInitType>) => {
-    return keyName.split(/[\.\[\]]+/).filter(Boolean).reduce((acc:any, part) => acc && acc[part], values);
-};
+
 
 export const Home = () => {
     return (
@@ -61,6 +63,7 @@ export const Home = () => {
 
 const EachKeyForm = ({formIndex}:EachKeyForm) => {
     const {values,setFieldValue,errors,touched} =  useFormikContext<FormInitType>();
+    console.log(values,'dsadasdasdasd');
     const eachFormValue = values['formInitialValues'][formIndex];
     const handleCheckBoxChange = (event: React.ChangeEvent<HTMLInputElement>,fieldKey:keyof EachFormInitialValueType) => {
         setFieldValue(setFieldValueFirstArg(formIndex,fieldKey),event.target.checked);
@@ -72,6 +75,11 @@ const EachKeyForm = ({formIndex}:EachKeyForm) => {
         switch(value){
             case 'string':
             setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedString'),{...basicInitValue});
+            setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedNumber'),null);
+            break;
+            case 'number':
+            setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedString'),null);
+            setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedNumber'),{...gen_num_option,...num_basic_type});
             break;
             default:
             setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedString'),null);
@@ -117,177 +125,10 @@ const EachKeyForm = ({formIndex}:EachKeyForm) => {
 const CategoryHandler=({type,formIndex}:CategoryHandlerCompType & FormIndexType)=>{
     switch (type){
         case 'string':
-        return <StringCategory formIndex={formIndex}/>
+            return <StringCategory formIndex={formIndex}/>
+        case 'number':
+            return <NumberCategory formIndex={formIndex}/>
         default : 
-        return <></>
+            return <></>;
     }
-}
-
-const StringCategory = ({formIndex}:FormIndexType) => {
-    const {values,setFieldValue} = useFormikContext<FormInitType>();
-    const handleStringCategoryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const stringType = (event.target as HTMLInputElement).value;
-        setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedString.type' as fieldKeyType),stringType);
-        switch(stringType){
-            case 'password':
-            setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedString'),{...passwordInitValue});  
-            break;
-
-            case 'email':
-            setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedString'),{...emailInitValue});  
-            break;
-
-            case 'url':
-            setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedString'),{...urlInitValue});  
-            break;
-
-            case 'min max':
-            setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedString'),{...minMaxInitValue});  
-            break;
-
-            default:
-            setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedString'),{...basicInitValue});      
-        }
-      };
-
-       
-
-    return <>
-        <TextField
-            variant="outlined"
-            InputLabelProps={{
-                shrink: true
-            }}
-            className="textfield_parent"            
-            label='Select String Type'
-            size="medium"
-            InputProps={{
-                inputComponent: () => <RadioGroup
-                    sx={{width:'100%',display:'flex',justifyContent:'space-around'}}
-                    aria-labelledby="demo-controlled-radio-buttons-group"
-                    name="controlled-radio-buttons-group"
-                    value={getNestedValue(setFieldValueFirstArg(formIndex,'whenSelectedString.type' as fieldKeyType),values)}
-                    onChange={handleStringCategoryChange}
-                    row
-                >
-                {stringSelectedType.map((stringType,index) => <FormControlLabel key={index} className="menuItem" value={stringType} control={<Radio size="medium" />} label={stringType} />)}
-                </RadioGroup>
-            }}
-        />
-        <StringCategoryComponentsHandler formIndex={formIndex} stringType={getNestedValue(setFieldValueFirstArg(formIndex,'whenSelectedString.type' as fieldKeyType),values)}/>
-    </>
-}
-
-const StringCategoryComponentsHandler=({stringType,formIndex} :StringCategoryComponentsHandlerType & FormIndexType)=>{
-     switch (stringType) {
-        case 'password' : 
-        return <PasswordValidation formIndex={formIndex}/>;    
-
-        case 'email' : 
-        return <ValidationTextFieldMessage messageKey="Email" formikKey={setFieldValueFirstArg(formIndex,'whenSelectedString.errorMessage' as fieldKeyType)}/>    
-
-        case 'url' : 
-        return <ValidationTextFieldMessage messageKey="URL" formikKey={setFieldValueFirstArg(formIndex,'whenSelectedString.errorMessage' as fieldKeyType)}/>    
-  
-        case 'min max' : 
-        return <>
-        <MinMaxLimitReusableComp formIndex={formIndex} keyName="whenSelectedString."/>
-        <ValidationTextFieldMessage messageKey="Min Max Limit" formikKey={setFieldValueFirstArg(formIndex,'whenSelectedString.errorMessage' as fieldKeyType)}/>    
-        </>
-
-        default:
-        return <></>
-     }
-}
-
-// String Types 
-const ValidationTextFieldMessage = ({messageKey,formikKey}:ValidationTextFieldMessageType)=>{
-    const {setFieldValue,values,errors,touched} =  useFormikContext<FormInitType>();
-    const placholderLabel = `Enter ${messageKey} Validation Message`;
-    const handleChange=(event:ChangeEvent<HTMLInputElement>)=>{
-        setFieldValue(formikKey,event.target.value);
-    }
-    const errorMessage = getNestedValue(formikKey,errors);
-    const isError =  getNestedValue(formikKey,touched) && getNestedValue(formikKey,errors);
-    return <TextField error={isError} helperText={errorMessage} onChange={handleChange} value={getNestedValue(formikKey,values)} autoComplete="off" placeholder={placholderLabel}  label = {placholderLabel} fullWidth/>
-}
-
-const PasswordValidation=({formIndex}: FormIndexType)=>{
-    // const {values,setFieldValue} = useFormikContext<FormInitType>();
-    return <>
-            <TextField
-            variant="outlined"
-            InputLabelProps={{
-                shrink: true
-            }}
-            className="textfield_parent"            
-            label='Password Security'
-            size="medium"
-            InputProps={{
-                inputComponent : ()=><Grid container justifyContent={'space-around'}>
-                {passwordFormUtils.map(({keyName,label})=><Grid key={keyName} item sm={2.5}><ReusableCheckBox formIndex={formIndex} label={label} keyName={`whenSelectedString.${keyName}` as fieldKeyType}/></Grid> )}
-             </Grid>
-            }}
-            />            
-        <MinMaxLimitReusableComp formIndex={formIndex} keyName="whenSelectedString."/>
-        <ValidationTextFieldMessage messageKey="Password" formikKey={setFieldValueFirstArg(formIndex,'whenSelectedString.errorMessage' as fieldKeyType)}/>
-        </>
-   }
-
-const ReusableCheckBox=({label,keyName,formIndex}:ReusableCheckBoxType)=>{
-    const {values,setFieldValue} = useFormikContext<FormInitType>();
-    const handlePasswordValidator = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setFieldValue(setFieldValueFirstArg(formIndex,keyName as fieldKeyType),event.target.checked);
-    };
-    return <FormControlLabel
-    value="end"
-    control={<Checkbox onChange={handlePasswordValidator} checked={ getNestedValue(setFieldValueFirstArg(formIndex,keyName as fieldKeyType),values)}/>}
-    label={label}
-    labelPlacement="end"
-/>
-}
-
-const MinMaxLimitReusableComp=({formIndex,keyName}:FormIndexType & MinMaxLimitReusableCompType)=>{
-    return <Grid container spacing={2}>
-        <Grid item sm={6}><CharLimitValidation limit_type="min" formIndex={formIndex} keyName={keyName}/></Grid>
-        <Grid item sm={6}><CharLimitValidation limit_type="max" formIndex={formIndex} keyName={keyName}/></Grid>  
-    </Grid>
-}
-
-const CharLimitValidation=({limit_type,formIndex,keyName}:CharLimitValidationType & FormIndexType)=>{
-    const {values,setFieldValue,errors,touched} = useFormikContext<FormInitType>();
-    const changeKeyName = limit_type === 'min' ?  'isMinLimit' : 'isMaxLimit';
-    const handleLimitDisableEnableChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setFieldValue(setFieldValueFirstArg(formIndex,keyName + changeKeyName as fieldKeyType),!event.target.checked);
-    };
-    const minMaxKey = limit_type  === 'min' ? 'minLimit'   : 'maxLimit';
-    let minMaxValue = getNestedValue(setFieldValueFirstArg(formIndex,keyName + minMaxKey as fieldKeyType),values);
-    const handleMinMaxLimitHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setFieldValue(setFieldValueFirstArg(formIndex,keyName + minMaxKey as fieldKeyType),event.target.value);
-      }; 
-      
-    const isError = getNestedValue(setFieldValueFirstArg(formIndex,keyName + minMaxKey as fieldKeyType),touched) &&  getNestedValue(setFieldValueFirstArg(formIndex,keyName + minMaxKey as fieldKeyType),errors)
-
-    return <Box>
-        <TextField
-            autoComplete="off"
-            variant="outlined"
-            placeholder={`Enter ${limit_type} Limit`}
-            label={`Enter ${limit_type} Limit`}
-            fullWidth
-            type="number"
-            value={minMaxValue}
-            error={isError}
-            helperText={isError}
-            onChange={handleMinMaxLimitHandler}
-            disabled = {!getNestedValue(setFieldValueFirstArg(formIndex,keyName + changeKeyName as fieldKeyType),values)}
-            InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                      <FormControlLabel control={<Switch onChange={handleLimitDisableEnableChange} checked = {!getNestedValue(setFieldValueFirstArg(formIndex,keyName + changeKeyName as fieldKeyType),values)} defaultChecked />} label={`No ${limit_type} Limit`} />
-                  </InputAdornment>
-                )
-              }}
-        />
-    </Box>
 }
