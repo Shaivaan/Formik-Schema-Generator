@@ -1,5 +1,6 @@
 import * as Yup from 'yup';
-import { stringSchema } from '../String/StringSchema';
+import { stringSchema } from './StringSchema';
+import { numberSchema } from './NumberSchema';
 
 
 const mainFormSchema = () => {
@@ -12,6 +13,7 @@ const mainFormSchema = () => {
                 requireMessage: Yup.string().required('Require message is required'),
                 type: Yup.string().required('Type is required'),
                 whenSelectedString: stringSchema(),
+                whenSelectedNumber: numberSchema(),
             })
         ),
     });

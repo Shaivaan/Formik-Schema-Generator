@@ -1,4 +1,4 @@
-import { Checkbox, FormControlLabel, TextField } from "@mui/material";
+import { Box, Checkbox, FormControlLabel, InputAdornment, Switch, TextField } from "@mui/material";
 import { getNestedValue, setFieldValueFirstArg } from "../../Routes/Utils/HomeUtils";
 import { useFormikContext } from "formik";
 import { ChangeEvent } from "react";
@@ -37,4 +37,42 @@ const ReusableCheckBox=({label,keyName,formIndex}:ReusableCheckBoxType)=>{
 />
 }
 
-export {ValidationTextFieldMessage,GeneralTextFieldHandler,ReusableCheckBox}
+const CharLimitValidation=({limit_type,formIndex,keyName}:CharLimitValidationType & FormIndexType)=>{
+    const {values,setFieldValue,errors,touched} = useFormikContext<FormInitType>();
+    const changeKeyName = limit_type === 'min' ?  'isMinLimit' : 'isMaxLimit';
+    const handleLimitDisableEnableChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setFieldValue(setFieldValueFirstArg(formIndex,keyName + changeKeyName as fieldKeyType),!event.target.checked);
+    };
+    const minMaxKey = limit_type  === 'min' ? 'minLimit' : 'maxLimit';
+    let minMaxValue = getNestedValue(setFieldValueFirstArg(formIndex,keyName + minMaxKey as fieldKeyType),values);
+    const handleMinMaxLimitHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setFieldValue(setFieldValueFirstArg(formIndex,keyName + minMaxKey as fieldKeyType),event.target.value);
+    }; 
+      
+    const isError = getNestedValue(setFieldValueFirstArg(formIndex,keyName + minMaxKey as fieldKeyType),touched) &&  getNestedValue(setFieldValueFirstArg(formIndex,keyName + minMaxKey as fieldKeyType),errors) || getNestedValue(setFieldValueFirstArg(formIndex,keyName + changeKeyName as fieldKeyType),errors)
+
+    return <Box>
+        <TextField
+            autoComplete="off"
+            variant="outlined"
+            placeholder={`Enter ${limit_type} Limit`}
+            label={`Enter ${limit_type} Limit`}
+            fullWidth
+            type="number"
+            value={minMaxValue}
+            error={isError}
+            helperText={isError}
+            onChange={handleMinMaxLimitHandler}
+            disabled = {!getNestedValue(setFieldValueFirstArg(formIndex,keyName + changeKeyName as fieldKeyType),values)}
+            InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                      <FormControlLabel control={<Switch onChange={handleLimitDisableEnableChange} checked = {!getNestedValue(setFieldValueFirstArg(formIndex,keyName + changeKeyName as fieldKeyType),values)} defaultChecked />} label={`No ${limit_type} Limit`} />
+                  </InputAdornment>
+                )
+              }}
+        />
+    </Box>
+}
+
+export {ValidationTextFieldMessage,GeneralTextFieldHandler,ReusableCheckBox,CharLimitValidation}

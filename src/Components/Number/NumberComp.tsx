@@ -1,8 +1,8 @@
-import { FormControlLabel, Grid, Radio, RadioGroup, TextField } from "@mui/material";
+import { Box, FormControlLabel, Grid, InputAdornment, Radio, RadioGroup, Switch, TextField } from "@mui/material";
 import { useFormikContext } from "formik";
 import { getNestedValue, setFieldValueFirstArg } from "../../Routes/Utils/HomeUtils";
 import { gen_num_array, num_basic_type, num_digit_type, num_multiple_type, num_range_type, num_selected_type } from "../../Routes/Utils/numCategoryUtils";
-import { GeneralTextFieldHandler, ReusableCheckBox, ValidationTextFieldMessage } from "../GeneralComponents/GeneralComponents";
+import { CharLimitValidation, GeneralTextFieldHandler, ReusableCheckBox, ValidationTextFieldMessage } from "../GeneralComponents/GeneralComponents";
 
 const NumberCategory = ({formIndex}:FormIndexType)=>{
     const {values} = useFormikContext<FormInitType>();
@@ -22,20 +22,26 @@ const NumberCategory = ({formIndex}:FormIndexType)=>{
     const SelectNumberType = ({formIndex} : FormIndexType)=>{
     
       const {values,setFieldValue} = useFormikContext<FormInitType>();
+      const gen_num_option = {
+        isNonZero : getNestedValue(setFieldValueFirstArg(formIndex,'whenSelectedNumber.isNonZero' as fieldKeyType),values),
+        isInteger : getNestedValue(setFieldValueFirstArg(formIndex,'whenSelectedNumber.isInteger' as fieldKeyType),values),
+        isPositiveOnly : getNestedValue(setFieldValueFirstArg(formIndex,'whenSelectedNumber.isPositiveOnly' as fieldKeyType),values),
+      }
+       
       const handleNumberCategoryChange=(event:React.ChangeEvent<HTMLInputElement>)=>{
         const numberType = (event.target as HTMLInputElement).value;
         switch(numberType){
             case "basic":
-                setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedNumber'),{...num_basic_type});  
+                setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedNumber'),{...num_basic_type,...gen_num_option});  
                 break;
             case "range":
-                setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedNumber'),{...num_range_type});  
+                setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedNumber'),{...num_range_type,...gen_num_option});  
                 break;
             case "count":
-                setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedNumber'),{...num_digit_type});  
+                setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedNumber'),{...num_digit_type,...gen_num_option});  
                 break;
             case "multiple":
-                setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedNumber'),{...num_multiple_type});  
+                setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedNumber'),{...num_multiple_type,...gen_num_option});  
                 break;        
         }
       }
@@ -94,8 +100,6 @@ const NumberCategory = ({formIndex}:FormIndexType)=>{
 
     const NumberCategoryHandler=({type,formIndex}:CategoryHandlerCompType & FormIndexType)=>{
         switch(type){
-            case 'basic':
-             return <></>;
             case 'count':
              return <>
                <GeneralTextFieldHandler label="Enter Count" placholder="Enter Count" formIndex={formIndex} keyName={'whenSelectedNumber.count'}/>   
@@ -106,9 +110,24 @@ const NumberCategory = ({formIndex}:FormIndexType)=>{
                <GeneralTextFieldHandler label="Enter Multiple of" placholder="Enter Multiple of" formIndex={formIndex} keyName={'whenSelectedNumber.multiple'}/>   
                <ValidationTextFieldMessage formikKey={setFieldValueFirstArg(formIndex,'whenSelectedNumber.errorMessage' as fieldKeyType)} messageKey="Multiple"/>
              </>;
+
+            case 'range':
+            return <>
+             <MinMaxLimitReusableComp formIndex={formIndex} keyName="whenSelectedNumber."/>
+             <ValidationTextFieldMessage formikKey={setFieldValueFirstArg(formIndex,'whenSelectedNumber.errorMessage' as fieldKeyType)} messageKey="Range"/>
+            </>;
+            default:
+            return <></>;
              
              
         }
+    }
+
+    const MinMaxLimitReusableComp=({formIndex,keyName}:FormIndexType & MinMaxLimitReusableCompType)=>{
+        return <Grid container spacing={2}>
+            <Grid item sm={6}><CharLimitValidation limit_type="min" formIndex={formIndex} keyName={keyName}/></Grid>
+            <Grid item sm={6}><CharLimitValidation limit_type="max" formIndex={formIndex} keyName={keyName}/></Grid>  
+        </Grid>
     }
 
 

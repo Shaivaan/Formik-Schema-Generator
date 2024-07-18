@@ -27,22 +27,38 @@ const emailSchema = Yup.object().shape({
     errorMessage: Yup.string().required('Email error message is required'),
 })
 
-const limitSchema = () =>  {
-   return  {minLimit: Yup.number().test(
-    'minLimit',
-    'Min limit must be less than max limit',
-    function (value) {
-      return !this.parent.isMinLimit || !this.parent.isMaxLimit || (value as number) < this.parent.maxLimit;
-    }
-  ),
-  maxLimit: Yup.number().test(
-    'maxLimit',
-    'Max limit must be greater than min limit',
-    function (value) {
-      return !this.parent.isMaxLimit || !this.parent.isMinLimit || (value as number) > this.parent.minLimit;
-    }
-  )}
-}
+const limitSchema = () => {
+  return {
+    minLimit: Yup.number().test(
+      'minLimit',
+      'Min limit must be less than max limit',
+      function (value) {
+        return (this.parent.isMinLimit && this.parent.isMaxLimit) ? (value as number) < this.parent.maxLimit : true;
+      }
+    ),
+    maxLimit: Yup.number().test(
+      'maxLimit',
+      'Max limit must be greater than min limit',
+      function (value) {
+        return (this.parent.isMinLimit && this.parent.isMaxLimit) ? (value as number) > this.parent.minLimit : true;
+      }
+    ),
+  };
+};
+
+const minMaxSchema = Yup.object().shape({
+  type: Yup.string().oneOf(['min max']).required(),
+  errorMessage: Yup.string().required('Limit Validation Message is required'),
+  ...limitSchema(),
+  isMinLimit: Yup.bool().test('isMinLimit', 'Please select at least one limit', function (value) {
+    return value || this.parent.isMaxLimit;
+  }),
+  isMaxLimit: Yup.bool(),
+});
+
+
+
+
 
 const passwordSchema = Yup.object().shape({
     type: Yup.string().oneOf(['password']).required(),
@@ -54,11 +70,6 @@ const passwordSchema = Yup.object().shape({
   
 
 
-const minMaxSchema = Yup.object().shape({
-    type: Yup.string().oneOf(['min max']).required(),
-    errorMessage: Yup.string().required('Limit Validation Message is required'),
-    ...limitSchema()
-})
 
 export const validateMinMax = (key: string, value: number, parent: any) => {
     const isMin = key === 'minLimit';
@@ -74,4 +85,4 @@ const urlSchema = Yup.object().shape({
 })
 
 
-export {stringSchema}
+export {stringSchema,minMaxSchema}
