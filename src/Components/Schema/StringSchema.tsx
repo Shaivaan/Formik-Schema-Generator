@@ -47,7 +47,7 @@ const limitSchema = () => {
 };
 
 const minMaxSchema = Yup.object().shape({
-  type: Yup.string().oneOf(['min max']).required(),
+  type: Yup.string().oneOf(['min max','range']).required(),
   errorMessage: Yup.string().required('Limit Validation Message is required'),
   ...limitSchema(),
   isMinLimit: Yup.bool().test('isMinLimit', 'Please select at least one limit', function (value) {
@@ -56,28 +56,17 @@ const minMaxSchema = Yup.object().shape({
   isMaxLimit: Yup.bool(),
 });
 
-
-
-
-
 const passwordSchema = Yup.object().shape({
     type: Yup.string().oneOf(['password']).required(),
     errorMessage: Yup.string().required('Password error message is required'),
     ...limitSchema()
   });
-  
-  
-  
-
-
 
 export const validateMinMax = (key: string, value: number, parent: any) => {
     const isMin = key === 'minLimit';
     const limit = isMin ? 'maxLimit' : 'minLimit';
     return !parent[`is${key}`] || !parent[limit] || value < parent[limit];
   };
-  
-  
 
 const urlSchema = Yup.object().shape({
     type: Yup.string().oneOf(['url']).required(),

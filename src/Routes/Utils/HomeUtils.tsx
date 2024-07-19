@@ -33,9 +33,10 @@ const createSchemaStringFromValues = (
       type,
       whenSelectedString,
       requireMessage,
+      whenSelectedNumber
     }) => {
+      
       let fieldSchema = "Yup.string()";
-
       if (type === "string") {
         switch((whenSelectedString as unknown as ErorMessageAndType).type){
             case "email": 
@@ -57,6 +58,38 @@ const createSchemaStringFromValues = (
             default:
             break;
         }
+      }else if (type === "number") {
+        fieldSchema = "Yup.number()";
+        
+        
+        if ((whenSelectedNumber as unknown as WhenSelectedNumberType)?.isNonZero) {
+          fieldSchema += `.moreThan(0, 'Must be greater than zero')`;
+        }
+        if ((whenSelectedNumber as unknown as WhenSelectedNumberType)?.isInteger) {
+          fieldSchema += `.integer('Must be an integer')`;
+        }
+        if ((whenSelectedNumber as unknown as WhenSelectedNumberType)?.isPositiveOnly) {
+          fieldSchema += `.positive('Must be a positive number')`;
+        }
+        switch ((whenSelectedNumber as unknown as WhenSelectedNumberType)?.type) {
+          case 'multiple':
+            fieldSchema += `.test('is-multiple', '${(whenSelectedNumber as unknown as MultipleType).errorMessage}', value => value % ${(whenSelectedNumber as unknown as MultipleType).multiple} === 0)`;
+            break;
+          case 'count':
+            fieldSchema += `.test('is-digit-count', '${(whenSelectedNumber as unknown as CountType).errorMessage}', value => value && value.toString().length === ${(whenSelectedNumber as unknown as CountType).count})`;
+            break;
+          case 'range':
+            if ((whenSelectedNumber as unknown as MinMaxTypeNumber).isMinLimit) {
+              fieldSchema += `.min(${(whenSelectedNumber as unknown as MinMaxTypeNumber).minLimit}, 'Minimum limit is ${(whenSelectedNumber as unknown as MinMaxTypeNumber).minLimit}')`;
+            }
+            if ((whenSelectedNumber as unknown as MinMaxTypeNumber).isMaxLimit) {
+              fieldSchema += `.max(${(whenSelectedNumber as unknown as MinMaxTypeNumber).maxLimit}, 'Maximum limit is ${(whenSelectedNumber as unknown as MinMaxTypeNumber).maxLimit}')`;
+            }
+            break;
+          default:
+            break;
+        }
+
       }
       if (isNullable) {
         fieldSchema += `.nullable()`;
