@@ -7,11 +7,12 @@ const eachKeyForm = {
   type: "",
   whenSelectedString: null,
   whenSelectedNumber:null,
+  whenSelectedDate: null,
   requireMessage: "This Field is Required*",
 };
 
 const formInitialValues = { formInitialValues: [{ ...eachKeyForm }] };
-const typeValue = ["string", "number"];
+const typeValue = ["string", "number","date"];
 const setFieldValueFirstArg = (formIndex: number, fieldKey: fieldKeyType) =>
   `formInitialValues[${formIndex}].${fieldKey}`;
 

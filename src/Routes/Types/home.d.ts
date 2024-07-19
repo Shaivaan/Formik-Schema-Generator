@@ -17,6 +17,7 @@ interface EachFormInitialValueType{
     type : string
     whenSelectedString : null    
     whenSelectedNumber: null
+    whenSelectedDate: null
     requireMessage:string
 }
 

@@ -9,6 +9,8 @@ import {  gen_num_option, num_basic_type } from "../Utils/numCategoryUtils";
 import { ValidationTextFieldMessage } from "../../Components/GeneralComponents/GeneralComponents";
 import { NumberCategory } from "../../Components/Number/NumberComp";
 import { StringCategory } from "../../Components/String/StringComp";
+import { DateCategory } from "../../Components/Date/DateComp";
+import { basic_date_type, date_utils } from "../Utils/DateUtils";
 
 
 
@@ -68,20 +70,30 @@ const EachKeyForm = ({formIndex}:EachKeyForm) => {
         setFieldValue(setFieldValueFirstArg(formIndex,fieldKey),event.target.checked);
       };
 
+    const nullMaker=()=>{
+        setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedString'),null);
+        setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedNumber'),null);
+        setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedDate'),null);
+    }
+
     const handleTypeChange=(event:SelectChangeEvent)=>{
         const value = event.target.value;
         setFieldValue(setFieldValueFirstArg(formIndex,'type'),value);
         switch(value){
             case 'string':
-            setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedString'),{...basicInitValue});
-            setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedNumber'),null);
+                nullMaker();
+                setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedString'),{...basicInitValue});
             break;
             case 'number':
-            setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedString'),null);
-            setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedNumber'),{...gen_num_option,...num_basic_type});
+                nullMaker();
+                setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedNumber'),{...gen_num_option,...num_basic_type});
             break;
-            default:
-            setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedString'),null);
+            case 'date':
+                nullMaker();
+                setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedDate'),{...date_utils,...basic_date_type});
+            break;
+                default:
+                setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedString'),null);
         }
       };
 
@@ -127,6 +139,8 @@ const CategoryHandler=({type,formIndex}:CategoryHandlerCompType & FormIndexType)
             return <StringCategory formIndex={formIndex}/>
         case 'number':
             return <NumberCategory formIndex={formIndex}/>
+        case 'date':
+            return <DateCategory formIndex={formIndex}/>            
         default : 
             return <></>;
     }

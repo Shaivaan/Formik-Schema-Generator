@@ -10,7 +10,6 @@ const gen_num_array = [
     {label:'Non-Zero',keyName : 'isNonZero'},
     {label:'Integer',keyName : 'isInteger'},
     {label:'Positive Only',keyName : 'isPositiveOnly'}
-    
 ]
 
 
