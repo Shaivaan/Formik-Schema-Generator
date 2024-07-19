@@ -1,4 +1,4 @@
-import { Box, FormControlLabel, Grid, InputAdornment, Radio, RadioGroup, Switch, TextField } from "@mui/material";
+import { FormControlLabel, Grid, Radio, RadioGroup, TextField } from "@mui/material";
 import { useFormikContext } from "formik";
 import { getNestedValue, setFieldValueFirstArg } from "../../Routes/Utils/HomeUtils";
 import { gen_num_array, num_basic_type, num_digit_type, num_multiple_type, num_range_type, num_selected_type } from "../../Routes/Utils/numCategoryUtils";
