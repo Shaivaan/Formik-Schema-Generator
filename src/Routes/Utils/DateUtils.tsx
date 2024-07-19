@@ -1,6 +1,7 @@
 import { errorMessage } from "./stringCategoryUtils";
 const today = new Date();
-const four_day_later = (new Date().getDate()+4);
+const four_day_later_js = new Date(today);
+const four_day_later = new Date(four_day_later_js.setDate(today.getDate() + 4)) 
 const date_utils = {inFutureOnly:false,inPastOnly:false};
 const minMaxLimitInitialValue = {
     isMinLimit : true,
