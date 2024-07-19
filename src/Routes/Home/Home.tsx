@@ -65,6 +65,7 @@ export const Home = () => {
 
 const EachKeyForm = ({formIndex}:EachKeyForm) => {
     const {values,setFieldValue,errors,touched} =  useFormikContext<FormInitType>();
+    console.log(values);
     const eachFormValue = values['formInitialValues'][formIndex];
     const handleCheckBoxChange = (event: React.ChangeEvent<HTMLInputElement>,fieldKey:keyof EachFormInitialValueType) => {
         setFieldValue(setFieldValueFirstArg(formIndex,fieldKey),event.target.checked);
