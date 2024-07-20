@@ -36,7 +36,8 @@ const createSchemaStringFromValues = (
       whenSelectedString,
       requireMessage,
       whenSelectedNumber,
-      whenSelectedDate
+      whenSelectedDate,
+      whenSelectedFile
     }) => {
       
       let fieldSchema = "Yup.string()";
@@ -115,6 +116,27 @@ const createSchemaStringFromValues = (
             break;
         }
 
+      }else if (type === 'file') {
+        let fileSchema = 'Yup.mixed()';
+      
+        if ((whenSelectedFile as unknown as WhenSelectedFileType)?.isFileSizeValidate) {
+          if ((whenSelectedFile as unknown as WhenSelectedFileType)?.type === 'single') {
+            fileSchema += `.test('fileSize', '${(whenSelectedFile as unknown as WhenSelectedFileType)?.fileSizeErrorMessage}', value => value && value.size <= ${(whenSelectedFile as unknown as WhenSelectedFileType)?.fileSize} * 1024)`;
+          } else if ((whenSelectedFile as unknown as WhenSelectedFileType)?.type === 'multiple') {
+            fileSchema += `.test('fileSize', '${(whenSelectedFile as unknown as WhenSelectedFileType)?.fileSizeErrorMessage}', value => Array.isArray(value) && value.every(file => file.size <= ${(whenSelectedFile as unknown as WhenSelectedFileType)?.fileSize} * 1024))`;
+          }
+        }
+      
+        if ((whenSelectedFile as unknown as WhenSelectedFileType)?.isFileType && (whenSelectedFile as unknown as WhenSelectedFileType)?.allowedFile) {
+          const allowedExtensions = (whenSelectedFile as unknown as WhenSelectedFileType).allowedFile.map(ext => `'${ext}'`).join(', ');
+          if ((whenSelectedFile as unknown as WhenSelectedFileType)?.type === 'single') {
+            fileSchema += `.test('fileType', '${(whenSelectedFile as unknown as WhenSelectedFileType)?.fileTypeErrorMessage}', value => value && [${allowedExtensions}].includes(value.name.split('.').pop()?.toLowerCase() || ''))`;
+          } else if ((whenSelectedFile as unknown as WhenSelectedFileType)?.type === 'multiple') {
+            fileSchema += `.test('fileType', '${(whenSelectedFile as unknown as WhenSelectedFileType)?.fileTypeErrorMessage}', value => Array.isArray(value) && value.every(file => [${allowedExtensions}].includes(file.name.split('.').pop()?.toLowerCase() || ''))`;
+          }
+        }
+      
+        fieldSchema = fileSchema;
       }
 
 

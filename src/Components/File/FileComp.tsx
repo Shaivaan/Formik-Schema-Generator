@@ -28,8 +28,9 @@ const FileSizeTextAndError=({formIndex,keyName} : KeyNameType & FormIndexType)=>
 }
 
 const FileTypeSelectAndError=({formIndex,keyName} : KeyNameType & FormIndexType)=>{
-    const {values,setFieldValue} = useFormikContext<FormInitType>();
+    const {values,setFieldValue,errors,touched} = useFormikContext<FormInitType>();
     const allowedExtension = getNestedValue(setFieldValueFirstArg(formIndex,keyName + '.allowedFile' as unknown as fieldKeyType),values);
+    const isError = getNestedValue(setFieldValueFirstArg(formIndex,keyName + '.allowedFile' as unknown as fieldKeyType),touched) && getNestedValue(setFieldValueFirstArg(formIndex,keyName + '.allowedFile' as unknown as fieldKeyType),errors) ;
 
     const handleFileTypeChange = (
         _event: React.ChangeEvent<{}>,
@@ -66,6 +67,8 @@ const FileTypeSelectAndError=({formIndex,keyName} : KeyNameType & FormIndexType)
           label="Select File Extensions"
           size="medium"
           placeholder="Extensions" 
+          helperText={isError}
+          error={isError}
         />
       )}
     />
@@ -108,6 +111,8 @@ const FileSelectCategory=({formIndex} : FormIndexType)=>{
         isFileType : getNestedValue(setFieldValueFirstArg(formIndex,'whenSelectedFile.isFileType' as fieldKeyType),values),
         fileSize : getNestedValue(setFieldValueFirstArg(formIndex,'whenSelectedFile.fileSize' as fieldKeyType),values),
         allowedFile : getNestedValue(setFieldValueFirstArg(formIndex,'whenSelectedFile.allowedFile' as fieldKeyType),values),
+        fileSizeErrorMessage : getNestedValue(setFieldValueFirstArg(formIndex,'whenSelectedFile.fileSizeErrorMessage' as fieldKeyType),values),
+        fileTypeErrorMessage : getNestedValue(setFieldValueFirstArg(formIndex,'whenSelectedFile.fileTypeErrorMessage' as fieldKeyType),values),
       }
 
     const handleFileCategoryChange=(event:React.ChangeEvent<HTMLInputElement>)=>{
