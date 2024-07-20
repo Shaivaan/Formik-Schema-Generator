@@ -22,6 +22,167 @@ const getNestedValue = (keyName:string,values:FormInitType | FormikErrors<FormIn
   return keyName.split(/[\.\[\]]+/).filter(Boolean).reduce((acc:any, part) => acc && acc[part], values);
 };
 
+const createStringSchema = (
+  whenSelectedString: ErorMessageAndType | PasswordMessageAndType | null,
+  isNullable: boolean,
+  isRequired: boolean,
+  requireMessage: string
+): string => {
+  let fieldSchema = "Yup.string()";
+
+  if (whenSelectedString) {
+    switch (whenSelectedString.type) {
+      case "email":
+        fieldSchema = emailSchemaHandler(whenSelectedString as ErorMessageAndType);
+        break;
+      case "password":
+        fieldSchema += passwordSchemaHandler(whenSelectedString as PasswordMessageAndType);
+        break;
+      case "url":
+        fieldSchema = urlSchemaHandler(whenSelectedString as ErorMessageAndType);
+        break;
+      case "min max":
+        fieldSchema += minMaxSchemaHandler(whenSelectedString as PasswordMessageAndType);
+        break;
+      default:
+        break;
+    }
+  }
+
+  if (isNullable) {
+    fieldSchema += `.nullable()`;
+  }
+
+  if (isRequired) {
+    fieldSchema += `.required('${requireMessage}')`;
+  }
+
+  return fieldSchema;
+};
+
+const createNumberSchema = (
+  whenSelectedNumber: WhenSelectedNumberType | null,
+  isNullable: boolean,
+  isRequired: boolean,
+  requireMessage: string
+): string => {
+  let fieldSchema = "Yup.number()";
+
+  if (whenSelectedNumber) {
+    if (whenSelectedNumber.isNonZero) {
+      fieldSchema += `.moreThan(0, 'Must be greater than zero')`;
+    }
+    if (whenSelectedNumber.isInteger) {
+      fieldSchema += `.integer('Must be an integer')`;
+    }
+    if (whenSelectedNumber.isPositiveOnly) {
+      fieldSchema += `.positive('Must be a positive number')`;
+    }
+    switch (whenSelectedNumber.type) {
+      case 'multiple':
+        fieldSchema += `.test('is-multiple', '${whenSelectedNumber.errorMessage}', value => value % ${whenSelectedNumber.multiple} === 0)`;
+        break;
+      case 'count':
+        fieldSchema += `.test('is-digit-count', '${whenSelectedNumber.errorMessage}', value => value && value.toString().length === ${whenSelectedNumber.count})`;
+        break;
+      case 'range':
+        if (whenSelectedNumber.isMinLimit) {
+          fieldSchema += `.min(${whenSelectedNumber.minLimit}, 'Minimum limit is ${whenSelectedNumber.minLimit}')`;
+        }
+        if (whenSelectedNumber.isMaxLimit) {
+          fieldSchema += `.max(${whenSelectedNumber.maxLimit}, 'Maximum limit is ${whenSelectedNumber.maxLimit}')`;
+        }
+        break;
+      default:
+        break;
+    }
+  }
+
+  if (isNullable) {
+    fieldSchema += `.nullable()`;
+  }
+
+  if (isRequired) {
+    fieldSchema += `.required('${requireMessage}')`;
+  }
+
+  return fieldSchema;
+};
+
+const createDateSchema = (
+  whenSelectedDate: WhenSelectedDateType | null,
+  isNullable: boolean,
+  isRequired: boolean,
+  requireMessage: string
+): string => {
+  let fieldSchema = "Yup.date()";
+
+  if (whenSelectedDate) {
+    if (whenSelectedDate.inFutureOnly) {
+      fieldSchema += `.min(new Date(), 'Date must be in the future')`;
+    } else if (whenSelectedDate.inPastOnly) {
+      fieldSchema += `.max(new Date(), 'Date must be in the past')`;
+    }
+
+    if (whenSelectedDate.type === 'range') {
+      if (whenSelectedDate.isMinLimit) {
+        fieldSchema += `.min(new Date('${whenSelectedDate.minLimit}'), 'Minimum date is ${whenSelectedDate.minLimit}')`;
+      }
+      if (whenSelectedDate.isMaxLimit) {
+        fieldSchema += `.max(new Date('${whenSelectedDate.maxLimit}'), 'Maximum date is ${whenSelectedDate.maxLimit}')`;
+      }
+    }
+  }
+
+  if (isNullable) {
+    fieldSchema += `.nullable()`;
+  }
+
+  if (isRequired) {
+    fieldSchema += `.required('${requireMessage}')`;
+  }
+
+  return fieldSchema;
+};
+
+const createFileSchema = (
+  whenSelectedFile: WhenSelectedFileType | null,
+  isNullable: boolean,
+  isRequired: boolean,
+  requireMessage: string
+): string => {
+  let fileSchema = 'Yup.mixed()';
+
+  if (whenSelectedFile) {
+    if (whenSelectedFile.isFileSizeValidate) {
+      if (whenSelectedFile.type === 'single') {
+        fileSchema += `.test('fileSize', '${whenSelectedFile.fileSizeErrorMessage}', value => value && value.size <= ${whenSelectedFile.fileSize} * 1024)`;
+      } else if (whenSelectedFile.type === 'multiple') {
+        fileSchema += `.test('fileSize', '${whenSelectedFile.fileSizeErrorMessage}', value => Array.isArray(value) && value.every(file => file.size <= ${whenSelectedFile.fileSize} * 1024))`;
+      }
+    }
+
+    if (whenSelectedFile.isFileType && whenSelectedFile.allowedFile) {
+      const allowedExtensions = whenSelectedFile.allowedFile.map(ext => `'${ext}'`).join(', ');
+      if (whenSelectedFile.type === 'single') {
+        fileSchema += `.test('fileType', '${whenSelectedFile.fileTypeErrorMessage}', value => value && [${allowedExtensions}].includes(value.name.split('.').pop()?.toLowerCase() || ''))`;
+      } else if (whenSelectedFile.type === 'multiple') {
+        fileSchema += `.test('fileType', '${whenSelectedFile.fileTypeErrorMessage}', value => Array.isArray(value) && value.every(file => [${allowedExtensions}].includes(file.name.split('.').pop()?.toLowerCase() || ''))`;
+      }
+    }
+  }
+
+  if (isNullable) {
+    fileSchema += `.nullable()`;
+  }
+
+  if (isRequired) {
+    fileSchema += `.required('${requireMessage}')`;
+  }
+
+  return fileSchema;
+};
+
 const createSchemaStringFromValues = (
   values: EachFormInitialValueType[]
 ): string => {
@@ -39,113 +200,24 @@ const createSchemaStringFromValues = (
       whenSelectedDate,
       whenSelectedFile
     }) => {
-      
-      let fieldSchema = "Yup.string()";
-      if (type === "string") {
-        switch((whenSelectedString as unknown as ErorMessageAndType).type){
-            case "email": 
-            fieldSchema = emailSchemaHandler(whenSelectedString as unknown as ErorMessageAndType);    
-            break;
+      let fieldSchema: string;
 
-            case "password": 
-            fieldSchema += passwordSchemaHandler(whenSelectedString as unknown as PasswordMessageAndType);    
-            break;
-
-            case "url": 
-            fieldSchema = urlSchemaHandler(whenSelectedString as unknown as ErorMessageAndType);
-            break;
-
-            case "min max": 
-            fieldSchema += minMaxSchemaHandler(whenSelectedString as unknown as PasswordMessageAndType);
-            break;
-
-            default:
-            break;
-        }
-      }else if (type === "number") {
-        fieldSchema = "Yup.number()";
-        
-        
-        if ((whenSelectedNumber as unknown as WhenSelectedNumberType)?.isNonZero) {
-          fieldSchema += `.moreThan(0, 'Must be greater than zero')`;
-        }
-        if ((whenSelectedNumber as unknown as WhenSelectedNumberType)?.isInteger) {
-          fieldSchema += `.integer('Must be an integer')`;
-        }
-        if ((whenSelectedNumber as unknown as WhenSelectedNumberType)?.isPositiveOnly) {
-          fieldSchema += `.positive('Must be a positive number')`;
-        }
-        switch ((whenSelectedNumber as unknown as WhenSelectedNumberType)?.type) {
-          case 'multiple':
-            fieldSchema += `.test('is-multiple', '${(whenSelectedNumber as unknown as MultipleType).errorMessage}', value => value % ${(whenSelectedNumber as unknown as MultipleType).multiple} === 0)`;
-            break;
-          case 'count':
-            fieldSchema += `.test('is-digit-count', '${(whenSelectedNumber as unknown as CountType).errorMessage}', value => value && value.toString().length === ${(whenSelectedNumber as unknown as CountType).count})`;
-            break;
-          case 'range':
-            if ((whenSelectedNumber as unknown as MinMaxTypeNumber).isMinLimit) {
-              fieldSchema += `.min(${(whenSelectedNumber as unknown as MinMaxTypeNumber).minLimit}, 'Minimum limit is ${(whenSelectedNumber as unknown as MinMaxTypeNumber).minLimit}')`;
-            }
-            if ((whenSelectedNumber as unknown as MinMaxTypeNumber).isMaxLimit) {
-              fieldSchema += `.max(${(whenSelectedNumber as unknown as MinMaxTypeNumber).maxLimit}, 'Maximum limit is ${(whenSelectedNumber as unknown as MinMaxTypeNumber).maxLimit}')`;
-            }
-            break;
-          default:
-            break;
-        }
-
-      }
-      else if(type === 'date'){
-        fieldSchema = "Yup.date()";
-        if ((whenSelectedDate as unknown as WhenSelectedDateType)?.inFutureOnly) {
-          fieldSchema += `.min(new Date(), 'Date must be in the future')`;
-        } else if ((whenSelectedDate as unknown as WhenSelectedDateType)?.inPastOnly) {
-          fieldSchema += `.max(new Date(), 'Date must be in the past')`;
-        }
-
-        switch ((whenSelectedDate as unknown as WhenSelectedDateType)?.type) {
-          case 'range':
-            if ((whenSelectedDate as unknown as MinMaxTypeDate).isMinLimit) {
-              fieldSchema += `.min(new Date('${(whenSelectedDate as unknown as MinMaxTypeDate).minLimit}'), 'Minimum date is ${(whenSelectedDate as unknown as MinMaxTypeDate).minLimit}')`;
-            }
-            if ((whenSelectedDate as unknown as MinMaxTypeDate).isMaxLimit) {
-              fieldSchema += `.max(new Date('${(whenSelectedDate as unknown as MinMaxTypeDate).maxLimit}'), 'Maximum date is ${(whenSelectedDate as unknown as MinMaxTypeDate).maxLimit}')`;
-            }
-            break;
-          default:
-            break;
-        }
-
-      }else if (type === 'file') {
-        let fileSchema = 'Yup.mixed()';
-      
-        if ((whenSelectedFile as unknown as WhenSelectedFileType)?.isFileSizeValidate) {
-          if ((whenSelectedFile as unknown as WhenSelectedFileType)?.type === 'single') {
-            fileSchema += `.test('fileSize', '${(whenSelectedFile as unknown as WhenSelectedFileType)?.fileSizeErrorMessage}', value => value && value.size <= ${(whenSelectedFile as unknown as WhenSelectedFileType)?.fileSize} * 1024)`;
-          } else if ((whenSelectedFile as unknown as WhenSelectedFileType)?.type === 'multiple') {
-            fileSchema += `.test('fileSize', '${(whenSelectedFile as unknown as WhenSelectedFileType)?.fileSizeErrorMessage}', value => Array.isArray(value) && value.every(file => file.size <= ${(whenSelectedFile as unknown as WhenSelectedFileType)?.fileSize} * 1024))`;
-          }
-        }
-      
-        if ((whenSelectedFile as unknown as WhenSelectedFileType)?.isFileType && (whenSelectedFile as unknown as WhenSelectedFileType)?.allowedFile) {
-          const allowedExtensions = (whenSelectedFile as unknown as WhenSelectedFileType).allowedFile.map(ext => `'${ext}'`).join(', ');
-          if ((whenSelectedFile as unknown as WhenSelectedFileType)?.type === 'single') {
-            fileSchema += `.test('fileType', '${(whenSelectedFile as unknown as WhenSelectedFileType)?.fileTypeErrorMessage}', value => value && [${allowedExtensions}].includes(value.name.split('.').pop()?.toLowerCase() || ''))`;
-          } else if ((whenSelectedFile as unknown as WhenSelectedFileType)?.type === 'multiple') {
-            fileSchema += `.test('fileType', '${(whenSelectedFile as unknown as WhenSelectedFileType)?.fileTypeErrorMessage}', value => Array.isArray(value) && value.every(file => [${allowedExtensions}].includes(file.name.split('.').pop()?.toLowerCase() || ''))`;
-          }
-        }
-      
-        fieldSchema = fileSchema;
-      }
-
-
-      if (isNullable) {
-        fieldSchema += `.nullable()`;
-      }
-
-      if (isRequired) {
-        fieldSchema += `.required('${requireMessage}')`;
+      switch (type) {
+        case "string":
+          fieldSchema = createStringSchema(whenSelectedString as ErorMessageAndType | PasswordMessageAndType | null, isNullable, isRequired, requireMessage);
+          break;
+        case "number":
+          fieldSchema = createNumberSchema(whenSelectedNumber as WhenSelectedNumberType | null, isNullable, isRequired, requireMessage);
+          break;
+        case "date":
+          fieldSchema = createDateSchema(whenSelectedDate as WhenSelectedDateType | null, isNullable, isRequired, requireMessage);
+          break;
+        case "file":
+          fieldSchema = createFileSchema(whenSelectedFile as WhenSelectedFileType | null, isNullable, isRequired, requireMessage);
+          break;
+        default:
+          fieldSchema = "Yup.mixed()";
+          break;
       }
 
       schemaLines.push(`${keyName}: ${fieldSchema},`);
@@ -160,7 +232,6 @@ ${schemaLines.join("\n")}
 
   return schemaString;
 };
-
 
 const emailSchemaHandler = (whenSelectedString:ErorMessageAndType)=>{
      return `Yup.string().email('${

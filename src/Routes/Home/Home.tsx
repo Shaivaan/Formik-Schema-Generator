@@ -1,4 +1,4 @@
-import { Box, Button, Checkbox, FormControl, FormControlLabel, FormHelperText, Grid, InputLabel, MenuItem, Select, SelectChangeEvent, TextField } from "@mui/material";
+import { Box, Button, Checkbox, FormControl, FormControlLabel, FormHelperText, Grid, InputLabel, MenuItem, RadioGroup, Select, SelectChangeEvent, TextField } from "@mui/material";
 import "./Home.css";
 import { ArrayHelpers, FieldArray, Formik, useFormikContext } from "formik";
 import { createSchemaStringFromValues, eachKeyForm, formInitialValues, getNestedValue, setFieldValueFirstArg, typeValue } from "../Utils/HomeUtils";
@@ -114,10 +114,30 @@ const EachKeyForm = ({formIndex}:EachKeyForm) => {
      const keyNameTextfieldValue = getNestedValue(setFieldValueFirstArg(formIndex,'keyName'),values)
 
     return <Box className="parentCont global_column_flex">
-        <Grid container spacing={3} alignItems={'center'}>
-            <Grid item lg={8} sm={6}><TextField error={isKeyNameError} helperText={getNestedValue(setFieldValueFirstArg(formIndex,'keyName'),errors)} onChange={handleKeyNameChange} value={keyNameTextfieldValue} autoComplete="off" label='Key Name' placeholder="Key Name" variant="outlined" fullWidth /></Grid>
-            <Grid item lg={2}> <FormControlLabel  control={<Checkbox  onChange={(event)=>handleCheckBoxChange(event,'isRequired')}/>} checked={eachFormValue.isRequired} label="IsRequired?" /></Grid>
-            <Grid item lg={2}> <FormControlLabel control={<Checkbox  onChange={(event)=>handleCheckBoxChange(event,'isNullable')} />} checked={eachFormValue.isNullable}  label="IsNullable?" /></Grid>
+        <Grid container spacing={2}>
+            <Grid item xs={6}><TextField error={isKeyNameError} helperText={getNestedValue(setFieldValueFirstArg(formIndex,'keyName'),errors)} onChange={handleKeyNameChange} value={keyNameTextfieldValue} autoComplete="off" label='Key Name' placeholder="Key Name" variant="outlined" fullWidth /></Grid>
+            <Grid item xs={6}>
+                <TextField
+                    fullWidth
+                    variant="outlined"
+                    InputLabelProps={{
+                        shrink: true
+                    }}
+                    className="textfield_parent" 
+                    size="medium"
+                    InputProps={{
+                        inputComponent: () => <RadioGroup
+                            sx={{width:'100%',display:'flex',justifyContent:'space-around'}}
+                            aria-labelledby="demo-controlled-radio-buttons-group"
+                            name="controlled-radio-buttons-group"
+                            row
+                        >
+                        <FormControlLabel  control={<Checkbox  onChange={(event)=>handleCheckBoxChange(event,'isRequired')}/>} checked={eachFormValue.isRequired} label="IsRequired?" />
+                        <FormControlLabel control={<Checkbox  onChange={(event)=>handleCheckBoxChange(event,'isNullable')} />} checked={eachFormValue.isNullable}  label="IsNullable?" />
+                        </RadioGroup>
+                    }}
+                />  
+            </Grid>
         </Grid>
         {eachFormValue.isRequired && <ValidationTextFieldMessage messageKey="Required" formikKey={setFieldValueFirstArg(formIndex,'requireMessage')}/>}
         <FormControl fullWidth>
