@@ -6,7 +6,7 @@ import { basicInitValue } from "../Utils/StringCategoryUtils";
 import { ChangeEvent, FormEvent } from "react";
 import { mainFormSchema } from "../../Components/Schema/MainFormSchema";
 import {  gen_num_option, num_basic_type } from "../Utils/NumCategoryUtils";
-import { LabelWithTooltip, SchemaModal, SnackBarAlert, TooltipComponent, ValidationTextFieldMessage } from "../../Components/GeneralComponents/GeneralComponents";
+import { LabelWithTooltip, SchemaModal, SnackBarAlert, ValidationTextFieldMessage } from "../../Components/GeneralComponents/GeneralComponents";
 import { NumberCategory } from "../../Components/Number/NumberComp";
 import { StringCategory } from "../../Components/String/StringComp";
 import { DateCategory } from "../../Components/Date/DateComp";
