@@ -240,7 +240,9 @@ const createSchemaStringFromValues = (
   );
 
   const schemaString = `
-Yup.object().shape({
+import * as Yup from 'yup';
+
+const generateSchema = Yup.object().shape({
 ${schemaLines.join("\n")}
 });
 `;

@@ -1,4 +1,4 @@
-import { Box, Button, Checkbox, FormControl, FormControlLabel, FormHelperText, Grid, IconButton, InputLabel, MenuItem, RadioGroup, Select, SelectChangeEvent, TextField } from "@mui/material";
+import { Box, Checkbox, FormControl, FormControlLabel, FormHelperText, Grid, IconButton, InputLabel, MenuItem, RadioGroup, Select, SelectChangeEvent, TextField } from "@mui/material";
 import "./Home.css";
 import { ArrayHelpers, FieldArray, Formik, useFormikContext } from "formik";
 import { createSchemaStringFromValues, eachKeyForm, formInitialValues, getNestedValue, setFieldValueFirstArg, typeValue } from "../Utils/HomeUtils";
@@ -6,7 +6,7 @@ import { basicInitValue } from "../Utils/StringCategoryUtils";
 import { ChangeEvent, FormEvent } from "react";
 import { mainFormSchema } from "../../Components/Schema/MainFormSchema";
 import {  gen_num_option, num_basic_type } from "../Utils/NumCategoryUtils";
-import { ValidationTextFieldMessage } from "../../Components/GeneralComponents/GeneralComponents";
+import { SchemaModal, SnackBarAlert, ValidationTextFieldMessage } from "../../Components/GeneralComponents/GeneralComponents";
 import { NumberCategory } from "../../Components/Number/NumberComp";
 import { StringCategory } from "../../Components/String/StringComp";
 import { DateCategory } from "../../Components/Date/DateComp";
@@ -14,18 +14,26 @@ import { basic_date_type, date_utils } from "../Utils/DateUtils";
 import { FileCategory } from "../../Components/File/FileComp";
 import { file_single, file_util } from "../Utils/FileUtils";
 import { Delete } from "@mui/icons-material";
+import { useStore } from "../../Zustand/Zustand";
+import LoadingButton from '@mui/lab/LoadingButton';
 
 
 
 export const Home = () => {
+    const {setSchemaModal, setSchemaContent,setIsProcessing, isProcessing } = useStore();
     return (
+        <>
+        <SchemaModal/>
+        <SnackBarAlert/>
         <Grid container justifyContent={'center'} sx={{marginTop:'2rem'}}>
             <Grid lg={10} md={10} sm={12} xs={12}>
                 <Formik
                     initialValues={formInitialValues}
                     onSubmit={(values:FormInitType) => { 
-                        console.log(values);
-                        console.log(createSchemaStringFromValues(values.formInitialValues));
+                        setIsProcessing(true);
+                        setSchemaContent(createSchemaStringFromValues(values.formInitialValues));
+                        setSchemaModal(true);
+                        setIsProcessing(false);
                     }}
                     enableReinitialize
                     validateOnChange
@@ -51,8 +59,8 @@ export const Home = () => {
                                                     }
                                                 )}
                                                 <Box className = 'global_column_flex each_form'>
-                                                <Button fullWidth variant="contained" size="large" onClick={()=>push({...eachKeyForm})}>Add One More Key</Button>
-                                                <Button fullWidth variant="outlined" size="large" onClick={(event)=>handleSubmit(event as unknown as FormEvent<HTMLFormElement>)}>Generate Schema</Button>
+                                                <LoadingButton loading={isProcessing} disabled={isProcessing} fullWidth variant="contained" size="large" onClick={()=>push({...eachKeyForm})}>Add One More Key</LoadingButton>
+                                                <LoadingButton disabled={isProcessing} fullWidth variant="outlined" size="large" onClick={(event)=>handleSubmit(event as unknown as FormEvent<HTMLFormElement>)}>Generate Schema</LoadingButton>
                                                 </Box>
                                             </Box>
                                         )}
@@ -64,6 +72,7 @@ export const Home = () => {
                 </Formik>
             </Grid>
         </Grid>
+        </>
     );
 };
 

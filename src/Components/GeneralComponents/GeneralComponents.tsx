@@ -1,7 +1,22 @@
-import { Box, Checkbox, FormControlLabel, InputAdornment, Switch, TextField } from "@mui/material";
+import { Alert, Box, Button, Checkbox, FormControlLabel, IconButton, InputAdornment, Modal, Snackbar, Switch, TextField, Typography } from "@mui/material";
 import { getNestedValue, setFieldValueFirstArg } from "../../Routes/Utils/HomeUtils";
 import { useFormikContext } from "formik";
 import { ChangeEvent } from "react";
+import { useStore } from "../../Zustand/Zustand";
+import { CopyAll } from "@mui/icons-material";
+const snackbarBarCloseTime = 2000;
+
+const modalStyle = {
+    position: 'absolute' as 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: '60rem',
+    bgcolor: 'background.paper',
+    boxShadow: 24,
+    p: 4,
+    borderRadius:'10px'
+  };
 
 const ValidationTextFieldMessage = ({messageKey,formikKey}:ValidationTextFieldMessageType)=>{
     const {setFieldValue,values,errors,touched} =  useFormikContext<FormInitType>();
@@ -75,4 +90,76 @@ const CharLimitValidation=({limit_type,formIndex,keyName}:CharLimitValidationTyp
     </Box>
 }
 
-export {ValidationTextFieldMessage,GeneralTextFieldHandler,ReusableCheckBox,CharLimitValidation}
+
+const SchemaModal = () => {
+    const { isSchemaModal, schemaContent, setSchemaModal,setIsSnackbarVisible} = useStore();
+  
+    const handleClose = () => setSchemaModal(false);
+  
+    const handleCopy = () => {
+      navigator.clipboard.writeText(schemaContent ?? '').then(() => {
+        setIsSnackbarVisible(true);
+      });
+    };
+  
+    return (
+      <Modal
+        open={isSchemaModal}
+        onClose={handleClose}
+        aria-labelledby="modal-title"
+        aria-describedby="modal-description"
+      >
+        <Box sx={modalStyle}>
+          <Box className = 'global_justfiy_between'>
+          <Typography id="modal-title" variant="h6" component="h2">
+            Generated Schema
+          </Typography>
+          <IconButton onClick={handleCopy} color="primary">
+              <CopyAll />
+            </IconButton>
+
+          </Box>
+          <Box
+            sx={{
+              mt: 2,
+              maxHeight: 300,
+              overflowY: 'auto',
+              bgcolor: '#f5f5f5',
+              p: 2,
+              borderRadius: 1,
+            }}
+          >
+            <Typography id="modal-description" component="pre">
+              {schemaContent}
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+            <Button variant="contained" color="primary" onClick={handleClose}>
+              Close
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
+    );
+  };
+
+
+  const SnackBarAlert=()=>{
+    const {isSnackBarVisible,setIsSnackbarVisible } = useStore();
+    const handleClose=()=>setIsSnackbarVisible(false)
+    return <Snackbar open={isSnackBarVisible} autoHideDuration={snackbarBarCloseTime} onClose={handleClose} anchorOrigin={{
+        vertical:'top',
+        horizontal:'right'
+    }}>
+    <Alert
+      onClose={handleClose}
+      severity="success"
+      variant="filled"
+      sx={{ width: '100%' }}
+    >
+      Schema copied to clipboard!
+    </Alert>
+  </Snackbar>
+  }
+
+export {ValidationTextFieldMessage,GeneralTextFieldHandler,ReusableCheckBox,CharLimitValidation,SchemaModal,SnackBarAlert}
