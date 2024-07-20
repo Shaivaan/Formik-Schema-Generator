@@ -1,6 +1,7 @@
 import * as Yup from 'yup';
 import { stringSchema } from './StringSchema';
 import { numberSchema } from './NumberSchema';
+import { dateSchema } from './DateSchema';
 
 
 const mainFormSchema = () => {
@@ -14,6 +15,8 @@ const mainFormSchema = () => {
                 type: Yup.string().required('Type is required'),
                 whenSelectedString: stringSchema(),
                 whenSelectedNumber: numberSchema(),
+                whenSelectedDate: dateSchema(),
+
             })
         ),
     });

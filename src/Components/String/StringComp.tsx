@@ -1,7 +1,7 @@
 import { useFormikContext } from "formik";
 import { CharLimitValidation, ReusableCheckBox, ValidationTextFieldMessage } from "../GeneralComponents/GeneralComponents";
 import { basicInitValue, emailInitValue, minMaxInitValue, passwordFormUtils, passwordInitValue, stringSelectedType, urlInitValue } from "../../Routes/Utils/stringCategoryUtils";
-import { Box, FormControlLabel, Grid, InputAdornment, Radio, RadioGroup, Switch, TextField } from "@mui/material";
+import { FormControlLabel, Grid, Radio, RadioGroup, TextField } from "@mui/material";
 import { getNestedValue, setFieldValueFirstArg } from "../../Routes/Utils/HomeUtils";
 
 const StringCategory = ({formIndex}:FormIndexType) => {

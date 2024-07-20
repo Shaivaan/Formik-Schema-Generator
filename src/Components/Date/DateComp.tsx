@@ -1,4 +1,4 @@
-import { Box, FormControlLabel, Grid, InputAdornment, Radio, RadioGroup, Switch, TextField, TextFieldProps } from "@mui/material";
+import { FormControlLabel, Grid, Radio, RadioGroup, Switch, TextField} from "@mui/material";
 import { basic_date_type, date_option_type, date_util_arry, range_date_type } from "../../Routes/Utils/DateUtils";
 import { ReusableCheckBox } from "../GeneralComponents/GeneralComponents";
 import { useFormikContext } from "formik";
@@ -7,9 +7,7 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { forwardRef } from "react";
 import dayjs, {Dayjs} from 'dayjs';
-import { num_selected_type } from "../../Routes/Utils/numCategoryUtils";
 
 const DateCategory = ({formIndex}: FormIndexType)=>{
     const {values} = useFormikContext<FormInitType>();
@@ -32,6 +30,9 @@ const DateCategoryHandler=({formIndex,type} : CategoryHandlerCompType & FormInde
 }
 
 const DateUtils=({formIndex}: FormIndexType)=>{
+    const {errors,touched} = useFormikContext<FormInitType>();
+    const keyToFind = 'whenSelectedDate.inFutureOnly'
+    const isError = getNestedValue(setFieldValueFirstArg(formIndex,keyToFind as fieldKeyType),touched) &&  getNestedValue(setFieldValueFirstArg(formIndex,keyToFind as fieldKeyType),errors);
     return  <TextField
     variant="outlined"
     InputLabelProps={{
@@ -40,7 +41,9 @@ const DateUtils=({formIndex}: FormIndexType)=>{
     fullWidth
     className="textfield_parent"            
     label='Select Date Options'
+    helperText={isError}
     size="medium"
+    error={isError}
     InputProps={{
         inputComponent: () => <RadioGroup
             sx={{width:'100%',display:'flex',justifyContent:'space-around'}}
@@ -126,9 +129,10 @@ const CharLimitValidation=({limit_type,formIndex,keyName}:CharLimitValidationTyp
         setFieldValue(setFieldValueFirstArg(formIndex,keyName + minMaxKey as fieldKeyType),daysJsDate);
     }; 
       
-    const isError = getNestedValue(setFieldValueFirstArg(formIndex,keyName + minMaxKey as fieldKeyType),touched) &&  getNestedValue(setFieldValueFirstArg(formIndex,keyName + minMaxKey as fieldKeyType),errors) || getNestedValue(setFieldValueFirstArg(formIndex,keyName + changeKeyName as fieldKeyType),errors)
+    const isError = getNestedValue(setFieldValueFirstArg(formIndex,keyName + minMaxKey as fieldKeyType),touched) &&  getNestedValue(setFieldValueFirstArg(formIndex,keyName + minMaxKey as fieldKeyType),errors)
+     || getNestedValue(setFieldValueFirstArg(formIndex,keyName + changeKeyName as fieldKeyType),touched) &&  getNestedValue(setFieldValueFirstArg(formIndex,keyName + changeKeyName as fieldKeyType),errors)
 
-    return <Grid container spacing={2} alignItems={'center'}>
+    return <Grid container spacing={2}>
         <Grid item sm={8}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DemoContainer components={['DatePicker']}>
@@ -137,37 +141,20 @@ const CharLimitValidation=({limit_type,formIndex,keyName}:CharLimitValidationTyp
                     label={`${label} Date`}
                     onChange={(changeDate)=>handleMinMaxLimitHandler(changeDate as Dayjs)}
                     value={dayjs(minMaxValue)}
-                    slots={{
-                        textField : forwardRef<HTMLDivElement, TextFieldProps>(
-                            (props, ref) => (
-                            <TextField
-                                {...props}
-                                ref={ref}
-                                fullWidth
-                                error={isError}
-                                helperText={isError}
-                                variant="outlined"
-                                size="medium"
-                                disabled = {!getNestedValue(setFieldValueFirstArg(formIndex,keyName + changeKeyName as fieldKeyType),values)}
-                                // InputProps={{
-                                //   ...props.InputProps,
-                                //   endAdornment: (
-                                //     <InputAdornment position="end">
-                                //         <FormControlLabel control={<Switch onChange={handleLimitDisableEnableChange} checked = {!getNestedValue(setFieldValueFirstArg(formIndex,keyName + changeKeyName as fieldKeyType),values)} defaultChecked />} label={`No ${label} Date`} />
-                                //     </InputAdornment>
-                                //   ),
-                                // }}
-                            />
-                            )
-                        )
+                    slotProps={{
+                        textField : {
+                            helperText : isError,
+                            error : isError,
+                            fullWidth:true
+                        }
                     }}
-
+                    disabled = {!getNestedValue(setFieldValueFirstArg(formIndex,keyName + changeKeyName as fieldKeyType),values)}
                     />
                 </DemoContainer>
             </LocalizationProvider>
         </Grid>
         <Grid item sm={4} 
-        style={{position:'relative',marginTop:'0.4rem'}}
+        style={{position:'relative',marginTop:'0.5rem'}}
         >
         <TextField
             InputLabelProps={{
@@ -175,34 +162,12 @@ const CharLimitValidation=({limit_type,formIndex,keyName}:CharLimitValidationTyp
             }}
             fullWidth
             variant="outlined"
-            className="textfield_parent"            
+            className="textfield_parent_switch"            
             InputProps={{
-                inputComponent: () => <><FormControlLabel control={<Switch onChange={handleLimitDisableEnableChange} checked = {!getNestedValue(setFieldValueFirstArg(formIndex,keyName + changeKeyName as fieldKeyType),values)} defaultChecked />} label={`No ${limit_type} Limit`} /></> 
+                inputComponent: () => <><FormControlLabel control={<Switch onChange={handleLimitDisableEnableChange} checked = {!getNestedValue(setFieldValueFirstArg(formIndex,keyName + changeKeyName as fieldKeyType),values)} defaultChecked />} label={`No ${label} Date`} /></> 
             }}
         />
         </Grid>
-        
- {/*  */}
-        {/* <TextField
-            autoComplete="off"
-            variant="outlined"
-            placeholder={`Enter ${limit_type} Limit`}
-            label={`Enter ${limit_type} Limit`}
-            fullWidth
-            type="number"
-            value={minMaxValue}
-            error={isError}
-            helperText={isError}
-            onChange={handleMinMaxLimitHandler}
-            disabled = {!getNestedValue(setFieldValueFirstArg(formIndex,keyName + changeKeyName as fieldKeyType),values)}
-            InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                      <FormControlLabel control={<Switch onChange={handleLimitDisableEnableChange} checked = {!getNestedValue(setFieldValueFirstArg(formIndex,keyName + changeKeyName as fieldKeyType),values)} defaultChecked />} label={`No ${limit_type} Limit`} />
-                  </InputAdornment>
-                )
-              }}
-        /> */}
     </Grid>
 }
 
