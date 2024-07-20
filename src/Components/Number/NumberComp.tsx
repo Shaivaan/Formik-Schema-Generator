@@ -8,10 +8,10 @@ const NumberCategory = ({formIndex}:FormIndexType)=>{
     const {values} = useFormikContext<FormInitType>();
     return <>
         <Grid container spacing={4}>
-            <Grid item md={6} sm={12}>
+            <Grid item md={6} sm={12} xs={12}>
             <SelectNumberType formIndex={formIndex}/>
             </Grid>
-            <Grid item md={6} sm={12}>
+            <Grid item md={6} sm={12} xs={12}>
             <SelectNumberFormat formIndex={formIndex}/>
             </Grid>
         </Grid>
@@ -125,8 +125,8 @@ const NumberCategory = ({formIndex}:FormIndexType)=>{
 
     const MinMaxLimitReusableComp=({formIndex,keyName}:FormIndexType & MinMaxLimitReusableCompType)=>{
         return <Grid container spacing={2}>
-            <Grid item sm={6}><CharLimitValidation limit_type="min" formIndex={formIndex} keyName={keyName}/></Grid>
-            <Grid item sm={6}><CharLimitValidation limit_type="max" formIndex={formIndex} keyName={keyName}/></Grid>  
+            <Grid item sm={6} xs={12}><CharLimitValidation limit_type="min" formIndex={formIndex} keyName={keyName}/></Grid>
+            <Grid item sm={6} xs={12}><CharLimitValidation limit_type="max" formIndex={formIndex} keyName={keyName}/></Grid>  
         </Grid>
     }
 

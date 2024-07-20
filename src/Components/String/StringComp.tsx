@@ -96,7 +96,7 @@ const PasswordValidation=({formIndex}: FormIndexType)=>{
             size="medium"
             InputProps={{
                 inputComponent : ()=><Grid container justifyContent={'space-around'}>
-                {passwordFormUtils.map(({keyName,label})=><Grid key={keyName} item sm={2.5}><ReusableCheckBox formIndex={formIndex} label={label} keyName={`whenSelectedString.${keyName}` as fieldKeyType}/></Grid> )}
+                {passwordFormUtils.map(({keyName,label})=><Grid key={keyName} item sm={2.5} xs={6}><ReusableCheckBox formIndex={formIndex} label={label} keyName={`whenSelectedString.${keyName}` as fieldKeyType}/></Grid> )}
              </Grid>
             }}
             />            
@@ -109,8 +109,8 @@ const PasswordValidation=({formIndex}: FormIndexType)=>{
 
 const MinMaxLimitReusableComp=({formIndex,keyName}:FormIndexType & MinMaxLimitReusableCompType)=>{
     return <Grid container spacing={2}>
-        <Grid item sm={6}><CharLimitValidation limit_type="min" formIndex={formIndex} keyName={keyName}/></Grid>
-        <Grid item sm={6}><CharLimitValidation limit_type="max" formIndex={formIndex} keyName={keyName}/></Grid>  
+        <Grid item sm={6} xs={12}><CharLimitValidation limit_type="min" formIndex={formIndex} keyName={keyName}/></Grid>
+        <Grid item sm={6} xs={12}><CharLimitValidation limit_type="max" formIndex={formIndex} keyName={keyName}/></Grid>  
     </Grid>
 }
 

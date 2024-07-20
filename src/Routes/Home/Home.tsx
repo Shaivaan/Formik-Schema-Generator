@@ -1,4 +1,4 @@
-import { Box, Button, Checkbox, FormControl, FormControlLabel, FormHelperText, Grid, InputLabel, MenuItem, RadioGroup, Select, SelectChangeEvent, TextField } from "@mui/material";
+import { Box, Button, Checkbox, FormControl, FormControlLabel, FormHelperText, Grid, IconButton, InputLabel, MenuItem, RadioGroup, Select, SelectChangeEvent, TextField } from "@mui/material";
 import "./Home.css";
 import { ArrayHelpers, FieldArray, Formik, useFormikContext } from "formik";
 import { createSchemaStringFromValues, eachKeyForm, formInitialValues, getNestedValue, setFieldValueFirstArg, typeValue } from "../Utils/HomeUtils";
@@ -13,54 +13,57 @@ import { DateCategory } from "../../Components/Date/DateComp";
 import { basic_date_type, date_utils } from "../Utils/DateUtils";
 import { FileCategory } from "../../Components/File/FileComp";
 import { file_single, file_util } from "../Utils/FileUtils";
+import { Delete } from "@mui/icons-material";
 
 
 
 export const Home = () => {
     return (
-        <Box>
-            <Formik
-                initialValues={formInitialValues}
-                onSubmit={(values:FormInitType) => { 
-                    console.log(values);
-                    console.log(createSchemaStringFromValues(values.formInitialValues));
-                }}
-                enableReinitialize
-                validateOnChange
-                validateOnBlur
-                validationSchema={mainFormSchema}
-            >
-                {({values,handleSubmit}) => {
-                    return (
-                        <>
-                            <Box>
-                                <FieldArray
-                                    name="formInitialValues"
-                                    render={({push}: ArrayHelpers) => (
-                                        <Box className = 'global_column_flex'>
-                                            {values.formInitialValues.map(
-                                                (_formElem, formIndex: number) => {
-                                                    return (
-                                                        <Box key={formIndex}>
-                                                            <EachKeyForm formIndex={formIndex}/>                                                           
-                                                        </Box>
-                                                    );
-                                                }
-                                            )}
-                                            <Box className = 'parentCont global_column_flex'>
-                                             <Button fullWidth variant="contained" size="large" onClick={()=>push({...eachKeyForm})}>Add One More Key</Button>
-                                             <Button fullWidth variant="outlined" size="large" onClick={(event)=>handleSubmit(event as unknown as FormEvent<HTMLFormElement>)}>Generate Schema</Button>
-
+        <Grid container justifyContent={'center'} sx={{marginTop:'2rem'}}>
+            <Grid lg={10} md={10} sm={12} xs={12}>
+                <Formik
+                    initialValues={formInitialValues}
+                    onSubmit={(values:FormInitType) => { 
+                        console.log(values);
+                        console.log(createSchemaStringFromValues(values.formInitialValues));
+                    }}
+                    enableReinitialize
+                    validateOnChange
+                    validateOnBlur
+                    validationSchema={mainFormSchema}
+                >
+                    {({values,handleSubmit}) => {
+                        return (
+                            <>
+                                <Box>
+                                    <FieldArray
+                                        name="formInitialValues"
+                                        render={({push,remove}: ArrayHelpers) => (
+                                            <Box className = 'global_column_flex' sx={{columnGap:'2rem'}}>
+                                                {values.formInitialValues.map(
+                                                    (_formElem, formIndex: number) => {
+                                                        return (
+                                                            <Box key={formIndex} className = 'each_form'>
+                                                                {formIndex !== 0 && <Box className='end_align'><IconButton onClick={()=>remove(formIndex)}><Delete className="delete_icon"/></IconButton></Box>}
+                                                                <EachKeyForm formIndex={formIndex}/>                                                           
+                                                            </Box>
+                                                        );
+                                                    }
+                                                )}
+                                                <Box className = 'global_column_flex each_form'>
+                                                <Button fullWidth variant="contained" size="large" onClick={()=>push({...eachKeyForm})}>Add One More Key</Button>
+                                                <Button fullWidth variant="outlined" size="large" onClick={(event)=>handleSubmit(event as unknown as FormEvent<HTMLFormElement>)}>Generate Schema</Button>
+                                                </Box>
                                             </Box>
-                                        </Box>
-                                    )}
-                                />
-                            </Box>
-                        </>
-                    );
-                }}
-            </Formik>
-        </Box>
+                                        )}
+                                    />
+                                </Box>
+                            </>
+                        );
+                    }}
+                </Formik>
+            </Grid>
+        </Grid>
     );
 };
 
@@ -113,10 +116,10 @@ const EachKeyForm = ({formIndex}:EachKeyForm) => {
      const isTypeError = getNestedValue(setFieldValueFirstArg(formIndex,'type'),touched) &&  getNestedValue(setFieldValueFirstArg(formIndex,'type'),errors);
      const keyNameTextfieldValue = getNestedValue(setFieldValueFirstArg(formIndex,'keyName'),values)
 
-    return <Box className="parentCont global_column_flex">
+    return <Box className="global_column_flex">
         <Grid container spacing={2}>
-            <Grid item xs={6}><TextField error={isKeyNameError} helperText={getNestedValue(setFieldValueFirstArg(formIndex,'keyName'),errors)} onChange={handleKeyNameChange} value={keyNameTextfieldValue} autoComplete="off" label='Key Name' placeholder="Key Name" variant="outlined" fullWidth /></Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12} sm={6}><TextField error={isKeyNameError} helperText={getNestedValue(setFieldValueFirstArg(formIndex,'keyName'),errors)} onChange={handleKeyNameChange} value={keyNameTextfieldValue} autoComplete="off" label='Key Name' placeholder="Key Name" variant="outlined" fullWidth /></Grid>
+            <Grid item xs={12} sm={6}>
                 <TextField
                     fullWidth
                     variant="outlined"

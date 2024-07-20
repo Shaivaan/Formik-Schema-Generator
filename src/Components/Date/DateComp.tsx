@@ -111,8 +111,8 @@ const DateOptions=({formIndex}:FormIndexType )=>{
 
 const DateRangeComponent=({formIndex,keyName}:FormIndexType & MinMaxLimitReusableCompType)=>{
     return <Grid container spacing={2}>
-        <Grid item sm={6}><CharLimitValidation limit_type="min" formIndex={formIndex} keyName={keyName}/></Grid>
-        <Grid item sm={6}><CharLimitValidation limit_type="max" formIndex={formIndex} keyName={keyName}/></Grid>  
+        <Grid item sm={12} xs={12} md={6}><CharLimitValidation limit_type="min" formIndex={formIndex} keyName={keyName}/></Grid>
+        <Grid item sm={12} xs={12} md={6}><CharLimitValidation limit_type="max" formIndex={formIndex} keyName={keyName}/></Grid>  
     </Grid>
 }
 
@@ -133,7 +133,7 @@ const CharLimitValidation=({limit_type,formIndex,keyName}:CharLimitValidationTyp
      || getNestedValue(setFieldValueFirstArg(formIndex,keyName + changeKeyName as fieldKeyType),touched) &&  getNestedValue(setFieldValueFirstArg(formIndex,keyName + changeKeyName as fieldKeyType),errors)
 
     return <Grid container spacing={2}>
-        <Grid item sm={8}>
+        <Grid item sm={8} xs={12}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DemoContainer components={['DatePicker']}>
                     <DatePicker
@@ -153,7 +153,7 @@ const CharLimitValidation=({limit_type,formIndex,keyName}:CharLimitValidationTyp
                 </DemoContainer>
             </LocalizationProvider>
         </Grid>
-        <Grid item sm={4} 
+        <Grid item sm={4} xs={12}
         style={{position:'relative',marginTop:'0.5rem'}}
         >
         <TextField

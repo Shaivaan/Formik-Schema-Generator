@@ -13,7 +13,7 @@ const eachKeyForm = {
 };
 
 const formInitialValues = { formInitialValues: [{ ...eachKeyForm }] };
-const typeValue = ["string", "number","date","file"];
+const typeValue = ["string", "number","date","file","boolean"];
 const setFieldValueFirstArg = (formIndex: number, fieldKey: fieldKeyType) =>
   `formInitialValues[${formIndex}].${fieldKey}`;
 
@@ -183,6 +183,18 @@ const createFileSchema = (
   return fileSchema;
 };
 
+const createBooleanSchema = (isNullable:boolean,isRequired:boolean,requireMessage:string)=>{
+  let booleanSchema = "Yup.boolean()"
+  if (isNullable) {
+    booleanSchema += `.nullable()`;
+  }
+
+  if (isRequired) {
+    booleanSchema += `.required('${requireMessage}')`;
+  }
+  return booleanSchema;
+}
+
 const createSchemaStringFromValues = (
   values: EachFormInitialValueType[]
 ): string => {
@@ -214,6 +226,9 @@ const createSchemaStringFromValues = (
           break;
         case "file":
           fieldSchema = createFileSchema(whenSelectedFile as WhenSelectedFileType | null, isNullable, isRequired, requireMessage);
+          break;
+        case "boolean":
+          fieldSchema = createBooleanSchema(isNullable, isRequired, requireMessage);
           break;
         default:
           fieldSchema = "Yup.mixed()";

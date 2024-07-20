@@ -2,7 +2,6 @@
     width: 80%;
     margin: auto;
     border-radius: 10px;
-    border: 1px solid black;
     margin-top: 2rem;
     padding: 1rem;
 }
@@ -23,4 +22,18 @@ input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button { 
   -webkit-appearance: none; 
   margin: 0; 
+}
+
+.delete_icon{
+    color: red;
+}
+
+.end_align{
+    display: flex;
+    justify-content: end;
+}
+
+.each_form {
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+    padding: 1rem;
 }
