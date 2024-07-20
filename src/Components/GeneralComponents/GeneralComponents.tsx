@@ -19,7 +19,7 @@ const GeneralTextFieldHandler=({formIndex,keyName,label,placholder}:FormIndexTyp
     const {values,handleChange,touched,errors} = useFormikContext<FormInitType>();
     const textFieldValue = getNestedValue(setFieldValueFirstArg(formIndex,keyName as fieldKeyType),values);
     const isError = getNestedValue(setFieldValueFirstArg(formIndex,keyName as fieldKeyType),touched) && getNestedValue(setFieldValueFirstArg(formIndex,keyName as fieldKeyType),errors);
-    return <TextField error={isError} helperText={getNestedValue(setFieldValueFirstArg(formIndex,keyName as fieldKeyType),errors)} variant="outlined" value={textFieldValue} label={label} placeholder={placholder} autoComplete="off" name={setFieldValueFirstArg(formIndex,keyName  as fieldKeyType)} onChange={handleChange}/>
+    return <TextField fullWidth error={isError} helperText={getNestedValue(setFieldValueFirstArg(formIndex,keyName as fieldKeyType),errors)} variant="outlined" value={textFieldValue} label={label} placeholder={placholder} autoComplete="off" name={setFieldValueFirstArg(formIndex,keyName  as fieldKeyType)} onChange={handleChange}/>
     
 }
 

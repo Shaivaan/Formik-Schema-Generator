@@ -1,6 +1,6 @@
-import { FormControlLabel, Grid, Radio, RadioGroup, TextField } from "@mui/material"
+import { Autocomplete, Checkbox, FormControlLabel, Grid, Radio, RadioGroup, TextField } from "@mui/material"
 import { GeneralTextFieldHandler, ReusableCheckBox } from "../GeneralComponents/GeneralComponents"
-import { file_category, file_multiple, file_single, file_util_arry } from "../../Routes/Utils/FileUtils"
+import { categories_options, file_category, file_multiple, file_single, file_util_arry } from "../../Routes/Utils/FileUtils"
 import { getNestedValue, setFieldValueFirstArg } from "../../Routes/Utils/HomeUtils"
 import { useFormikContext } from "formik"
 
@@ -14,13 +14,66 @@ const FileCategory = ({formIndex} : FormIndexType)=>{
             <Grid item xs={6}><FileSelectCategory formIndex={formIndex}/></Grid>
             <Grid item xs={6}><FileUtilsSelect formIndex={formIndex}/></Grid>
         </Grid>
-       {isFileSizeChecked && <GeneralTextFieldHandler formIndex={formIndex} keyName="whenSelectedFile.fileSize" label="Enter File Size (kb)" placholder="Enter File Size"/>}
-       {isFileExtensionRequired && <>Select</>}
+       {isFileSizeChecked && <FileSizeTextAndError formIndex={formIndex} keyName="whenSelectedFile"/>}
+       {isFileExtensionRequired && <FileTypeSelectAndError formIndex={formIndex} keyName={"whenSelectedFile"}/>}
     </>
 }
 
 
+const FileSizeTextAndError=({formIndex,keyName} : KeyNameType & FormIndexType)=>{
+    return <Grid spacing={2} container>
+        <Grid item xs={6}><GeneralTextFieldHandler formIndex={formIndex} keyName={keyName + '.fileSize'} label="Enter File Size (kb)" placholder="Enter File Size"/></Grid>
+        <Grid item xs={6}><GeneralTextFieldHandler formIndex={formIndex} keyName={keyName + '.fileSizeErrorMessage'} label="Enter File Size Validation Error" placholder="Enter Validation Error"/></Grid>
+    </Grid>
+}
 
+const FileTypeSelectAndError=({formIndex,keyName} : KeyNameType & FormIndexType)=>{
+    const {values,setFieldValue} = useFormikContext<FormInitType>();
+    const allowedExtension = getNestedValue(setFieldValueFirstArg(formIndex,keyName + '.allowedFile' as unknown as fieldKeyType),values);
+
+    const handleFileTypeChange = (
+        _event: React.ChangeEvent<{}>,
+        newValue: ExtensionOption[]
+      ) => {
+        setFieldValue(setFieldValueFirstArg(formIndex,keyName + '.allowedFile' as unknown as fieldKeyType), newValue.map(option => option.extension));
+      };
+
+    return <Grid spacing={2} container>
+    <Grid item xs={12}>
+    <Autocomplete
+      multiple
+      options={categories_options}
+      groupBy={(option) => option.category}
+      disableCloseOnSelect
+      getOptionLabel={(option) => option.extension}
+      value={allowedExtension.map((ext: string) => 
+        categories_options.find(option => option.extension === ext) || { category: '', extension: ext }
+      )}
+      onChange={handleFileTypeChange}
+      renderOption={(props, option, { selected }) => (
+        <li {...props}>
+          <Checkbox
+            checked={selected}
+            style={{ marginRight: 8 }}
+          />
+          {option.extension}
+        </li>
+      )}
+      renderInput={(params) => (
+        <TextField 
+          {...params}
+          variant="outlined"
+          label="Select File Extensions"
+          size="medium"
+          placeholder="Extensions" 
+        />
+      )}
+    />
+
+    </Grid>
+    <Grid item xs={12}><GeneralTextFieldHandler formIndex={formIndex} keyName={keyName + '.fileTypeErrorMessage'} label="Enter File Type Validation Error" placholder="Enter Validation Error"/></Grid>
+</Grid>
+}
 
 
 const FileUtilsSelect=({formIndex} : FormIndexType)=>{
