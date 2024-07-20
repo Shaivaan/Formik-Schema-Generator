@@ -34,7 +34,8 @@ const createSchemaStringFromValues = (
       type,
       whenSelectedString,
       requireMessage,
-      whenSelectedNumber
+      whenSelectedNumber,
+      whenSelectedDate
     }) => {
       
       let fieldSchema = "Yup.string()";
@@ -92,6 +93,30 @@ const createSchemaStringFromValues = (
         }
 
       }
+      else if(type === 'date'){
+        fieldSchema = "Yup.date()";
+        if ((whenSelectedDate as unknown as WhenSelectedDateType)?.inFutureOnly) {
+          fieldSchema += `.min(new Date(), 'Date must be in the future')`;
+        } else if ((whenSelectedDate as unknown as WhenSelectedDateType)?.inPastOnly) {
+          fieldSchema += `.max(new Date(), 'Date must be in the past')`;
+        }
+
+        switch ((whenSelectedDate as unknown as WhenSelectedDateType)?.type) {
+          case 'range':
+            if ((whenSelectedDate as unknown as MinMaxTypeDate).isMinLimit) {
+              fieldSchema += `.min(new Date('${(whenSelectedDate as unknown as MinMaxTypeDate).minLimit}'), 'Minimum date is ${(whenSelectedDate as unknown as MinMaxTypeDate).minLimit}')`;
+            }
+            if ((whenSelectedDate as unknown as MinMaxTypeDate).isMaxLimit) {
+              fieldSchema += `.max(new Date('${(whenSelectedDate as unknown as MinMaxTypeDate).maxLimit}'), 'Maximum date is ${(whenSelectedDate as unknown as MinMaxTypeDate).maxLimit}')`;
+            }
+            break;
+          default:
+            break;
+        }
+
+      }
+
+
       if (isNullable) {
         fieldSchema += `.nullable()`;
       }
