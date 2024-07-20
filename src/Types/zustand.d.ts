@@ -1,6 +1,6 @@
 interface StoreState{
     isSchemaModal: boolean;
-    schemaContent: any | null; 
+    schemaContent: null | string; 
     isSnackBarVisible:boolean,
     isProcessing:boolean,
     setSchemaModal: (isOpen: boolean) => void;

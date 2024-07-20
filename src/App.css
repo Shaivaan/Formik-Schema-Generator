@@ -7,3 +7,8 @@ body{
   justify-content: space-between;
   align-items: center;
 }
+
+.global_flex{
+  display: flex;
+  align-items: center;
+}

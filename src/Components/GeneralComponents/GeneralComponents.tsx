@@ -1,9 +1,9 @@
-import { Alert, Box, Button, Checkbox, FormControlLabel, IconButton, InputAdornment, Modal, Snackbar, Switch, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, Checkbox, FormControlLabel, IconButton, InputAdornment, Modal, Snackbar, Switch, TextField, Tooltip, Typography } from "@mui/material";
 import { getNestedValue, setFieldValueFirstArg } from "../../Routes/Utils/HomeUtils";
 import { useFormikContext } from "formik";
 import { ChangeEvent } from "react";
 import { useStore } from "../../Zustand/Zustand";
-import { CopyAll } from "@mui/icons-material";
+import { CopyAll, InfoOutlined } from "@mui/icons-material";
 const snackbarBarCloseTime = 2000;
 
 const modalStyle = {
@@ -162,4 +162,20 @@ const SchemaModal = () => {
   </Snackbar>
   }
 
-export {ValidationTextFieldMessage,GeneralTextFieldHandler,ReusableCheckBox,CharLimitValidation,SchemaModal,SnackBarAlert}
+
+  const TooltipComponent=({title} : {title:string})=>{
+    return  <Tooltip title={title}>
+    <IconButton>
+      <InfoOutlined />
+    </IconButton>
+  </Tooltip>
+  }
+
+  const LabelWithTooltip=({label,tooltipTitle}:LabelWithTooltipType)=>{
+    return <Box className = 'global_flex'>
+      <Box>{label}</Box>
+      <TooltipComponent title={tooltipTitle}/>
+    </Box>
+  }
+
+export {ValidationTextFieldMessage,GeneralTextFieldHandler,ReusableCheckBox,CharLimitValidation,SchemaModal,SnackBarAlert,TooltipComponent,LabelWithTooltip}

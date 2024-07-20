@@ -2,7 +2,8 @@ import { FormControlLabel, Grid, Radio, RadioGroup, TextField } from "@mui/mater
 import { useFormikContext } from "formik";
 import { getNestedValue, setFieldValueFirstArg } from "../../Routes/Utils/HomeUtils";
 import { gen_num_array, num_basic_type, num_digit_type, num_multiple_type, num_range_type, num_selected_type } from "../../Routes/Utils/NumCategoryUtils";
-import { CharLimitValidation, GeneralTextFieldHandler, ReusableCheckBox, ValidationTextFieldMessage } from "../GeneralComponents/GeneralComponents";
+import { CharLimitValidation, GeneralTextFieldHandler, LabelWithTooltip, ReusableCheckBox, ValidationTextFieldMessage } from "../GeneralComponents/GeneralComponents";
+import { numCategoryText } from "../../Routes/Utils/TooltipText";
 
 const NumberCategory = ({formIndex}:FormIndexType)=>{
     const {values} = useFormikContext<FormInitType>();
@@ -65,7 +66,7 @@ const NumberCategory = ({formIndex}:FormIndexType)=>{
                 row
             >
             {num_selected_type.map((numType,index) => <FormControlLabel key={index} className="menuItem" control={<Radio size="medium" />} 
-            label={numType}  value={numType}
+            label={<LabelWithTooltip label={numType} tooltipTitle={numCategoryText[index]}/>}  value={numType}
              />)}
             </RadioGroup>
         }}

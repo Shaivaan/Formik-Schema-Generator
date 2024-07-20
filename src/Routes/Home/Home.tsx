@@ -6,7 +6,7 @@ import { basicInitValue } from "../Utils/StringCategoryUtils";
 import { ChangeEvent, FormEvent } from "react";
 import { mainFormSchema } from "../../Components/Schema/MainFormSchema";
 import {  gen_num_option, num_basic_type } from "../Utils/NumCategoryUtils";
-import { SchemaModal, SnackBarAlert, ValidationTextFieldMessage } from "../../Components/GeneralComponents/GeneralComponents";
+import { LabelWithTooltip, SchemaModal, SnackBarAlert, TooltipComponent, ValidationTextFieldMessage } from "../../Components/GeneralComponents/GeneralComponents";
 import { NumberCategory } from "../../Components/Number/NumberComp";
 import { StringCategory } from "../../Components/String/StringComp";
 import { DateCategory } from "../../Components/Date/DateComp";
@@ -16,6 +16,7 @@ import { file_single, file_util } from "../Utils/FileUtils";
 import { Delete } from "@mui/icons-material";
 import { useStore } from "../../Zustand/Zustand";
 import LoadingButton from '@mui/lab/LoadingButton';
+import { isNullableText, requiredText } from "../Utils/TooltipText";
 
 
 
@@ -144,8 +145,8 @@ const EachKeyForm = ({formIndex}:EachKeyForm) => {
                             name="controlled-radio-buttons-group"
                             row
                         >
-                        <FormControlLabel  control={<Checkbox  onChange={(event)=>handleCheckBoxChange(event,'isRequired')}/>} checked={eachFormValue.isRequired} label="IsRequired?" />
-                        <FormControlLabel control={<Checkbox  onChange={(event)=>handleCheckBoxChange(event,'isNullable')} />} checked={eachFormValue.isNullable}  label="IsNullable?" />
+                        <FormControlLabel  control={<Checkbox  onChange={(event)=>handleCheckBoxChange(event,'isRequired')}/>} checked={eachFormValue.isRequired} label={<LabelWithTooltip label={"IsRequired?"} tooltipTitle={requiredText}/>}   />
+                        <FormControlLabel control={<Checkbox  onChange={(event)=>handleCheckBoxChange(event,'isNullable')} />} checked={eachFormValue.isNullable}  label={<LabelWithTooltip label={"IsNullable?"} tooltipTitle={isNullableText}/>}/>
                         </RadioGroup>
                     }}
                 />  

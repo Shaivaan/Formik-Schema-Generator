@@ -8,7 +8,7 @@ const minMaxLimitInitialValue = {
     minLimit : today,
     isMaxLimit : false,
     maxLimit : four_day_later
-}   
+};   
 const basic_date_type = {type : 'basic'};
 const range_date_type = {type: 'range',...errorMessage('date range*'),...minMaxLimitInitialValue};
 const date_option_type = ['basic','range'];

@@ -1,8 +1,9 @@
 import { useFormikContext } from "formik";
-import { CharLimitValidation, ReusableCheckBox, ValidationTextFieldMessage } from "../GeneralComponents/GeneralComponents";
+import { CharLimitValidation, LabelWithTooltip, ReusableCheckBox, ValidationTextFieldMessage } from "../GeneralComponents/GeneralComponents";
 import { basicInitValue, emailInitValue, minMaxInitValue, passwordFormUtils, passwordInitValue, stringSelectedType, urlInitValue } from "../../Routes/Utils/StringCategoryUtils";
 import { FormControlLabel, Grid, Radio, RadioGroup, TextField } from "@mui/material";
 import { getNestedValue, setFieldValueFirstArg } from "../../Routes/Utils/HomeUtils";
+import { stringCategoryText } from "../../Routes/Utils/TooltipText";
 
 const StringCategory = ({formIndex}:FormIndexType) => {
     const {values,setFieldValue} = useFormikContext<FormInitType>();
@@ -51,7 +52,7 @@ const StringCategory = ({formIndex}:FormIndexType) => {
                     onChange={handleStringCategoryChange}
                     row
                 >
-                {stringSelectedType.map((stringType,index) => <FormControlLabel key={index} className="menuItem" value={stringType} control={<Radio size="medium" />} label={stringType} />)}
+                {stringSelectedType.map((stringType,index) => <FormControlLabel key={index} className="menuItem" value={stringType} control={<Radio size="medium" />}  label={<LabelWithTooltip label={stringType} tooltipTitle={stringCategoryText[index]}/> } />)}
                 </RadioGroup>
             }}
         />

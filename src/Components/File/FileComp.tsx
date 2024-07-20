@@ -1,8 +1,9 @@
 import { Autocomplete, Checkbox, FormControlLabel, Grid, Radio, RadioGroup, TextField } from "@mui/material"
-import { GeneralTextFieldHandler, ReusableCheckBox } from "../GeneralComponents/GeneralComponents"
+import { GeneralTextFieldHandler, LabelWithTooltip, ReusableCheckBox } from "../GeneralComponents/GeneralComponents"
 import { categories_options, file_category, file_multiple, file_single, file_util_arry } from "../../Routes/Utils/FileUtils"
 import { getNestedValue, setFieldValueFirstArg } from "../../Routes/Utils/HomeUtils"
 import { useFormikContext } from "formik"
+import { fileCategoryText } from "../../Routes/Utils/TooltipText"
 
 const FileCategory = ({formIndex} : FormIndexType)=>{
     const {values} = useFormikContext<FormInitType>();
@@ -147,7 +148,7 @@ const FileSelectCategory=({formIndex} : FormIndexType)=>{
             row
         >
         {file_category.map((file_cat_type,index) => <FormControlLabel key={index} className="menuItem" control={<Radio size="medium" />} 
-        label={`${file_cat_type} File`}  value={file_cat_type}
+        label={<LabelWithTooltip label={`${file_cat_type} File`} tooltipTitle={fileCategoryText[index]}/>}  value={file_cat_type}
          />)}
         </RadioGroup>
     }}

@@ -1,6 +1,6 @@
 import { FormControlLabel, Grid, Radio, RadioGroup, Switch, TextField} from "@mui/material";
 import { basic_date_type, date_option_type, date_util_arry, range_date_type } from "../../Routes/Utils/DateUtils";
-import { ReusableCheckBox } from "../GeneralComponents/GeneralComponents";
+import { LabelWithTooltip, ReusableCheckBox } from "../GeneralComponents/GeneralComponents";
 import { useFormikContext } from "formik";
 import { getNestedValue, setFieldValueFirstArg } from "../../Routes/Utils/HomeUtils";
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
@@ -8,6 +8,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs, {Dayjs} from 'dayjs';
+import { dateCategoryText } from "../../Routes/Utils/TooltipText";
 
 const DateCategory = ({formIndex}: FormIndexType)=>{
     const {values} = useFormikContext<FormInitType>();
@@ -101,7 +102,8 @@ const DateOptions=({formIndex}:FormIndexType )=>{
             row
         >
         {date_option_type.map((numType,index) => <FormControlLabel key={index} className="menuItem" control={<Radio size="medium" />} 
-        label={numType}  value={numType}
+        label={<LabelWithTooltip label={numType} tooltipTitle={dateCategoryText[index]}/>}
+        value={numType}
          />)}
         </RadioGroup>
     }}

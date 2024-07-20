@@ -48,3 +48,8 @@ interface LabelPlaceholderType{
     label:string
     placholder : string
 }
+
+interface LabelWithTooltipType{
+    label:string,
+    tooltipTitle:string
+}
