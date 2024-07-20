@@ -1,4 +1,4 @@
-import { errorMessage } from "./stringCategoryUtils";
+import { errorMessage } from "./StringCategoryUtils";
 const today = new Date();
 const four_day_later_js = new Date(today);
 const four_day_later = new Date(four_day_later_js.setDate(today.getDate() + 4)) 

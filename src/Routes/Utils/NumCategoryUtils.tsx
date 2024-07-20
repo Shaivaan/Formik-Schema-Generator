@@ -1,4 +1,4 @@
-import { errorMessage, minMaxLimitInitialValue } from "./stringCategoryUtils";
+import { errorMessage, minMaxLimitInitialValue } from "./StringCategoryUtils";
 
 const gen_num_option = {isNonZero:false,isInteger:false,isPositiveOnly:false};
 const num_basic_type = {type:'basic'};

@@ -2,15 +2,17 @@ import { Box, Button, Checkbox, FormControl, FormControlLabel, FormHelperText, G
 import "./Home.css";
 import { ArrayHelpers, FieldArray, Formik, useFormikContext } from "formik";
 import { createSchemaStringFromValues, eachKeyForm, formInitialValues, getNestedValue, setFieldValueFirstArg, typeValue } from "../Utils/HomeUtils";
-import { basicInitValue } from "../Utils/stringCategoryUtils";
+import { basicInitValue } from "../Utils/StringCategoryUtils";
 import { ChangeEvent, FormEvent } from "react";
 import { mainFormSchema } from "../../Components/Schema/MainFormSchema";
-import {  gen_num_option, num_basic_type } from "../Utils/numCategoryUtils";
+import {  gen_num_option, num_basic_type } from "../Utils/NumCategoryUtils";
 import { ValidationTextFieldMessage } from "../../Components/GeneralComponents/GeneralComponents";
 import { NumberCategory } from "../../Components/Number/NumberComp";
 import { StringCategory } from "../../Components/String/StringComp";
 import { DateCategory } from "../../Components/Date/DateComp";
 import { basic_date_type, date_utils } from "../Utils/DateUtils";
+import { FileCategory } from "../../Components/File/FileComp";
+import { file_single, file_util } from "../Utils/FileUtils";
 
 
 
@@ -65,6 +67,7 @@ export const Home = () => {
 
 const EachKeyForm = ({formIndex}:EachKeyForm) => {
     const {values,setFieldValue,errors,touched} =  useFormikContext<FormInitType>();
+    console.log(values);
     const eachFormValue = values['formInitialValues'][formIndex];
     const handleCheckBoxChange = (event: React.ChangeEvent<HTMLInputElement>,fieldKey:keyof EachFormInitialValueType) => {
         setFieldValue(setFieldValueFirstArg(formIndex,fieldKey),event.target.checked);
@@ -74,6 +77,7 @@ const EachKeyForm = ({formIndex}:EachKeyForm) => {
         setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedString'),null);
         setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedNumber'),null);
         setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedDate'),null);
+        setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedFile'),null);
     }
 
     const handleTypeChange=(event:SelectChangeEvent)=>{
@@ -91,6 +95,11 @@ const EachKeyForm = ({formIndex}:EachKeyForm) => {
             case 'date':
                 nullMaker();
                 setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedDate'),{...date_utils,...basic_date_type});
+                break;
+            case 'file':
+                nullMaker();
+                setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedFile'),{...file_util,...file_single}); 
+                break;               
             break;
                 default:
                 setFieldValue(setFieldValueFirstArg(formIndex,'whenSelectedString'),null);
@@ -140,7 +149,9 @@ const CategoryHandler=({type,formIndex}:CategoryHandlerCompType & FormIndexType)
         case 'number':
             return <NumberCategory formIndex={formIndex}/>
         case 'date':
-            return <DateCategory formIndex={formIndex}/>            
+            return <DateCategory formIndex={formIndex}/>    
+        case 'file':
+            return <FileCategory formIndex={formIndex}/>                        
         default : 
             return <></>;
     }

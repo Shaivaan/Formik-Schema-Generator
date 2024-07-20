@@ -1,7 +1,7 @@
 import { FormControlLabel, Grid, Radio, RadioGroup, TextField } from "@mui/material";
 import { useFormikContext } from "formik";
 import { getNestedValue, setFieldValueFirstArg } from "../../Routes/Utils/HomeUtils";
-import { gen_num_array, num_basic_type, num_digit_type, num_multiple_type, num_range_type, num_selected_type } from "../../Routes/Utils/numCategoryUtils";
+import { gen_num_array, num_basic_type, num_digit_type, num_multiple_type, num_range_type, num_selected_type } from "../../Routes/Utils/NumCategoryUtils";
 import { CharLimitValidation, GeneralTextFieldHandler, ReusableCheckBox, ValidationTextFieldMessage } from "../GeneralComponents/GeneralComponents";
 
 const NumberCategory = ({formIndex}:FormIndexType)=>{
