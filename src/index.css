@@ -1,8 +1,5 @@
 body{
-    background:rgba(0, 0, 0, 0.1) url('https://img.freepik.com/premium-vector/doodle-pattern-illustration-minimal-cartoon-style-abstract-doodle-wallpaper_630651-150.jpg?w=740');
-    /* background-size: cover; */
-    backdrop-filter: blur(5px);
-    height: 100vh;
+    background-color: #EFF7F6;
 }
 
 .global_column_flex{
@@ -11,7 +8,6 @@ body{
     row-gap: 1rem;
 }
 
-
-/* App Bar  Name, Logo, Theming*/
-/* Form ke top 3 button add, generate aur reset form */
-/* Accordion */
+.global_dark_button{
+    background-color: #1D3557 !important;
+}

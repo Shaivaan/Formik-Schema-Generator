@@ -32,13 +32,14 @@ const SchemExamples = () => {
       <Box my={2}></Box>
       <Box my={2}>
         <Paper elevation={2} sx={{ p: 3 }} className="code_parent paper_comp">
-          <Typography variant="body2" component="pre" textAlign={"left"}>
+          <Typography component="pre" textAlign={"left"}>
             {`import * as Yup from 'yup';
 
 const generateSchema = Yup.object().shape({
+email: Yup.string().email('Please enter valid Email').nullable().required('Email is Required*'),
+password: Yup.string().required('Password is Required*'),
 name: Yup.string().required('Name is required'),
-age: Yup.number().moreThan(0, 'Must be greater than zero').integer('Must be an integer').required('Age is Required*'),
-image: Yup.mixed().test('fileType', 'Please Select valid file type', value => value && ['jpg', 'jpeg', 'png'].includes(value.name.split('.').pop()?.toLowerCase() || '')).required('Image is Required*'),
+age: Yup.number().integer('Must be an integer').positive('Must be a positive number').required('Age is Required*'),
 });`}
           </Typography>
         </Paper>
@@ -81,8 +82,10 @@ const WelcomeContent = () => {
       <SchemExamples />
       <Button
         variant="contained"
+
         size="large"
         onClick={() => navigate("/schema")}
+        className="global_dark_button"
         sx={{textTransform:'capitalize'}}    
       >
         Start Generating Schema

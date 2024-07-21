@@ -59,10 +59,10 @@ export const Home = () => {
                                             <Box className = 'global_column_flex form_top_parent' sx={{columnGap:'2rem'}}>
                                                 <>
                                                 <Box className = 'button_parent'>
-                                                <LoadingButton variant="outlined" size="large" onClick={()=>(resetForm())}>Reset Form</LoadingButton>
+                                                <LoadingButton  color="inherit" variant="outlined" size="large" onClick={()=>(resetForm())}>Reset Form</LoadingButton>
                                                 <Box>
-                                                <LoadingButton loading={isProcessing} disabled={isProcessing}  variant="contained" size="large" onClick={()=>{push({...eachKeyForm});setTimeout(()=>scrollToBottom())}} >Add One More Key</LoadingButton>
-                                                <LoadingButton sx={{marginLeft:'1rem'}} disabled={isProcessing}  variant="outlined" size="large" onClick={(event)=>handleSubmit(event as unknown as FormEvent<HTMLFormElement>)}>Generate Schema</LoadingButton>
+                                                <LoadingButton loading={isProcessing} disabled={isProcessing}  variant="outlined" size="large" onClick={()=>{push({...eachKeyForm});setTimeout(()=>scrollToBottom())}} >Add One More Key</LoadingButton>
+                                                <LoadingButton sx={{marginLeft:'1rem'}} disabled={isProcessing}  variant="contained" className="global_dark_button" size="large" onClick={(event)=>handleSubmit(event as unknown as FormEvent<HTMLFormElement>)}>Generate Schema</LoadingButton>
 
                                                 </Box>
                                                 </Box>

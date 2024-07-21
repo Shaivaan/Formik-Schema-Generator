@@ -1,6 +1,4 @@
-.code_parent{
-    overflow: auto;
-}
+
 
 .parent_top{
     display: flex;
@@ -10,6 +8,13 @@
 
 .paper_comp{
     box-shadow: rgba(0, 0, 0, 0.06) 0px 2px 4px 0px inset;
+    background-color: inherit !important;
+}
+
+.code_parent{
+    overflow: auto;
+    background-color: #af5252 !important;
+    color: white !important;
 }
 
 .feature_parent{
