@@ -1,0 +1,8 @@
+.nav_parent{
+    background-color: inherit !important;
+    color: inherit !important;
+    box-shadow: none !important;
+    position: sticky !important;
+    top: 0 !important;
+    background-color: white !important;
+}

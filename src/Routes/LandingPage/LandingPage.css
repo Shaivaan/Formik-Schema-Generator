@@ -1,0 +1,20 @@
+.code_parent{
+    overflow: auto;
+}
+
+.parent_top{
+    display: flex;
+    flex-direction: column;
+    row-gap: 1.5rem;
+}
+
+.paper_comp{
+    box-shadow: rgba(0, 0, 0, 0.06) 0px 2px 4px 0px inset;
+}
+
+.feature_parent{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
