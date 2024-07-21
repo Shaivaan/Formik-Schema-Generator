@@ -10,7 +10,7 @@ import "./LandingPage.css";
 
 const LandingPage = () => {
   return (
-    <Grid container justifyContent={"center"}>
+    <Grid container justifyContent={"center"} marginBottom={'1rem'}>
       <Grid xs={12} sm={12} md={8}>
         <WelcomeContent />
         <HowItWorkAndFeature/>
