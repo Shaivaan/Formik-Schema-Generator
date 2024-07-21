@@ -4,12 +4,14 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import "./Navbar.css";
 import logo from '../../assets/titleIcon.png'
+import { useNavigate } from 'react-router-dom';
 
 export default function MenuAppBar() {
+  const navigate = useNavigate();
 
   return (
      <AppBar className='nav_parent'>
-     <Toolbar>
+     <Toolbar onClick={()=>navigate('/')}>
        <IconButton
          size="large"
          edge="start"
@@ -19,9 +21,9 @@ export default function MenuAppBar() {
        >
          <img src={logo} height={'30px'} width={'30px'}/>
        </IconButton>
-       <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-         Formik Schema Generator
-       </Typography>
+        <Typography variant="h6" component="div" sx={{ flexGrow: 1,cursor:'pointer' }} >
+          Formik Schema Generator
+        </Typography>
      </Toolbar>
    </AppBar>
   );

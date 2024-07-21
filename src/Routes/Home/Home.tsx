@@ -1,9 +1,9 @@
-import { Box, Checkbox, FormControl, FormControlLabel, FormHelperText, Grid, IconButton, InputLabel, MenuItem, RadioGroup, Select, SelectChangeEvent, TextField } from "@mui/material";
+import { Box, Checkbox, Divider, FormControl, FormControlLabel, FormHelperText, Grid, IconButton, InputLabel, MenuItem, RadioGroup, Select, SelectChangeEvent, TextField } from "@mui/material";
 import "./Home.css";
 import { ArrayHelpers, FieldArray, Formik, useFormikContext } from "formik";
 import { createSchemaStringFromValues, eachKeyForm, formInitialValues, getNestedValue, setFieldValueFirstArg, typeValue } from "../Utils/HomeUtils";
 import { basicInitValue } from "../Utils/StringCategoryUtils";
-import { ChangeEvent, FormEvent } from "react";
+import { ChangeEvent, FormEvent, useRef } from "react";
 import { mainFormSchema } from "../../Components/Schema/MainFormSchema";
 import {  gen_num_option, num_basic_type } from "../Utils/NumCategoryUtils";
 import { LabelWithTooltip, SchemaModal, SnackBarAlert, ValidationTextFieldMessage } from "../../Components/GeneralComponents/GeneralComponents";
@@ -22,6 +22,14 @@ import { isNullableText, requiredText } from "../Utils/TooltipText";
 
 export const Home = () => {
     const {setSchemaModal, setSchemaContent,setIsProcessing, isProcessing } = useStore();
+    const scrollableDivRef = useRef(null);
+
+    const scrollToBottom = () => {
+        if (scrollableDivRef.current) {
+          (scrollableDivRef.current as {scrollTop:number}).scrollTop = (scrollableDivRef.current as {scrollHeight:number}).scrollHeight - (scrollableDivRef.current as {clientHeight:number}).clientHeight;
+        }
+      };
+
     return (
         <>
         <SchemaModal/>
@@ -41,28 +49,41 @@ export const Home = () => {
                     validateOnBlur
                     validationSchema={mainFormSchema}
                 >
-                    {({values,handleSubmit}) => {
+                    {({values,handleSubmit,resetForm}) => {
                         return (
                             <>
                                 <Box>
                                     <FieldArray
                                         name="formInitialValues"
                                         render={({push,remove}: ArrayHelpers) => (
-                                            <Box className = 'global_column_flex' sx={{columnGap:'2rem'}}>
-                                                {values.formInitialValues.map(
-                                                    (_formElem, formIndex: number) => {
-                                                        return (
-                                                            <Box key={formIndex} className = 'each_form'>
-                                                                {formIndex !== 0 && <Box className='end_align'><IconButton onClick={()=>remove(formIndex)}><Delete className="delete_icon"/></IconButton></Box>}
-                                                                <EachKeyForm formIndex={formIndex}/>                                                           
-                                                            </Box>
-                                                        );
-                                                    }
-                                                )}
-                                                <Box className = 'global_column_flex each_form'>
-                                                <LoadingButton loading={isProcessing} disabled={isProcessing} fullWidth variant="contained" size="large" onClick={()=>push({...eachKeyForm})}>Add One More Key</LoadingButton>
-                                                <LoadingButton disabled={isProcessing} fullWidth variant="outlined" size="large" onClick={(event)=>handleSubmit(event as unknown as FormEvent<HTMLFormElement>)}>Generate Schema</LoadingButton>
+                                            <Box className = 'global_column_flex form_top_parent' sx={{columnGap:'2rem'}}>
+                                                <>
+                                                <Box className = 'button_parent'>
+                                                <LoadingButton variant="outlined" size="large" onClick={()=>(resetForm())}>Reset Form</LoadingButton>
+                                                <Box>
+                                                <LoadingButton loading={isProcessing} disabled={isProcessing}  variant="contained" size="large" onClick={()=>{push({...eachKeyForm});setTimeout(()=>scrollToBottom())}} >Add One More Key</LoadingButton>
+                                                <LoadingButton sx={{marginLeft:'1rem'}} disabled={isProcessing}  variant="outlined" size="large" onClick={(event)=>handleSubmit(event as unknown as FormEvent<HTMLFormElement>)}>Generate Schema</LoadingButton>
+
                                                 </Box>
+                                                </Box>
+                                                <Box ref={scrollableDivRef} className ='form_parent'>
+                                                    {values.formInitialValues.map(
+                                                        (_formElem, formIndex: number) => {
+                                                            return (
+                                                                <>
+                                                                {formIndex !== 0 && <Divider sx={{borderWidth:'1px'}}/>}
+                                                                <Box key={formIndex} className = 'each_form'>
+                                                                    {formIndex !== 0 && <Box className='end_align'><IconButton onClick={()=>remove(formIndex)}><Delete className="delete_icon"/></IconButton></Box>}
+                                                                    <EachKeyForm formIndex={formIndex}/>                                                           
+                                                                </Box>
+
+                                                                </>
+                                                            );
+                                                        }
+                                                    )}
+                                                </Box>    
+                                                </>
+                                                
                                             </Box>
                                         )}
                                     />
@@ -80,6 +101,7 @@ export const Home = () => {
 
 const EachKeyForm = ({formIndex}:EachKeyForm) => {
     const {values,setFieldValue,errors,touched} =  useFormikContext<FormInitType>();
+    console.log(values,'dsad')
     const eachFormValue = values['formInitialValues'][formIndex];
     const handleCheckBoxChange = (event: React.ChangeEvent<HTMLInputElement>,fieldKey:keyof EachFormInitialValueType) => {
         setFieldValue(setFieldValueFirstArg(formIndex,fieldKey),event.target.checked);

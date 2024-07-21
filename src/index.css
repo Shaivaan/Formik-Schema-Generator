@@ -1,3 +1,10 @@
+body{
+    background:rgba(0, 0, 0, 0.1) url('https://img.freepik.com/premium-vector/doodle-pattern-illustration-minimal-cartoon-style-abstract-doodle-wallpaper_630651-150.jpg?w=740');
+    /* background-size: cover; */
+    backdrop-filter: blur(5px);
+    height: 100vh;
+}
+
 .global_column_flex{
     display: flex;
     flex-direction: column;
