@@ -22,7 +22,7 @@ export default function MenuAppBar() {
          <img src={logo} height={'30px'} width={'30px'}/>
        </IconButton>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1,cursor:'pointer' }} >
-          Formik Schema Generator
+          Yup Schema Generator
         </Typography>
      </Toolbar>
    </AppBar>
