@@ -87,10 +87,26 @@ export const validateMinMax = (key: string, value: number, parent: any) => {
     return !parent[`is${key}`] || !parent[limit] || value < parent[limit];
   };
 
-const urlSchema = Yup.object().shape({
+  const urlSchema = Yup.object().shape({
     type: Yup.string().oneOf(['url']).required(),
     errorMessage: Yup.string().required('URL error message is required'),
-})
+    customUrl: Yup.string().nullable()
+      .test(
+        'is-custom-url',
+        'URL must end with the specified domain',
+        function (value) {
+          const { isCustomUrl, customUrl } = this.parent;
+          if (isCustomUrl) {
+            return value ? value.endsWith(customUrl) : false;
+          }
+          return true;
+        }
+      )
+      .matches(
+        /^(?!.*\s)(?!.*\d)[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/,
+        'Custom URL must be a valid domain name'
+      ),
+  });
 
 
 export {stringSchema,minMaxSchema}

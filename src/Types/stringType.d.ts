@@ -32,6 +32,13 @@ interface EmailType  {
     customMail: string
   };
 
+  interface UrlType  {
+    errorMessage: string
+    type: string
+    isCustomUrl: boolean
+    customUrl: string
+  };
+
 interface PasswordMessageAndType extends ErorMessageAndType{
         isNumberRequired: boolean,
         isUpperCaseRequired: boolean,

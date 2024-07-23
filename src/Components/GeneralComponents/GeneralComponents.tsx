@@ -178,4 +178,38 @@ const SchemaModal = () => {
     </Box>
   }
 
-export {ValidationTextFieldMessage,GeneralTextFieldHandler,ReusableCheckBox,CharLimitValidation,SchemaModal,SnackBarAlert,TooltipComponent,LabelWithTooltip}
+  
+const SwitchAndTextField=({label,placholder,keyName,formIndex,switchKeyName} : LabelPlaceholderType & KeyNameType & FormIndexType & SwitchKeyType)=>{
+  const {values,setFieldValue,errors,touched} = useFormikContext<FormInitType>();
+  const isError = getNestedValue(setFieldValueFirstArg(formIndex,keyName as fieldKeyType),touched) &&  getNestedValue(setFieldValueFirstArg(formIndex,keyName as fieldKeyType),errors);
+  const handleTextFieldChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setFieldValue(setFieldValueFirstArg(formIndex,keyName as fieldKeyType),event.target.value);
+  }; 
+
+  const handleLimitDisableEnableChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setFieldValue(setFieldValueFirstArg(formIndex,switchKeyName as fieldKeyType),event.target.checked);
+  };
+
+
+  return <TextField
+  autoComplete="off"
+  variant="outlined"
+  placeholder={placholder}
+  label={placholder}
+  fullWidth
+  value={getNestedValue(setFieldValueFirstArg(formIndex,keyName as unknown as fieldKeyType),values)}
+  error={isError}
+  helperText={isError}
+  onChange={handleTextFieldChange}
+  disabled = {!getNestedValue(setFieldValueFirstArg(formIndex,switchKeyName as fieldKeyType),values)}
+  InputProps={{
+      endAdornment: (
+        <InputAdornment position="end">
+            <FormControlLabel control={<Switch onChange={handleLimitDisableEnableChange} checked = {getNestedValue(setFieldValueFirstArg(formIndex,switchKeyName as fieldKeyType),values)}  />} label={label} />
+        </InputAdornment>
+      )
+    }}
+/>
+}
+
+export {SwitchAndTextField, ValidationTextFieldMessage,GeneralTextFieldHandler,ReusableCheckBox,CharLimitValidation,SchemaModal,SnackBarAlert,TooltipComponent,LabelWithTooltip}

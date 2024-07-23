@@ -39,7 +39,7 @@ const createStringSchema = (
         fieldSchema += passwordSchemaHandler(whenSelectedString as PasswordMessageAndType);
         break;
       case "url":
-        fieldSchema = urlSchemaHandler(whenSelectedString as ErorMessageAndType);
+        fieldSchema = urlSchemaHandler(whenSelectedString as UrlType);
         break;
       case "min max":
         fieldSchema += minMaxSchemaHandler(whenSelectedString as PasswordMessageAndType);
@@ -293,9 +293,21 @@ const passwordSchemaHandler = (whenSelectedString:PasswordMessageAndType)=>{
     return fieldSchema
 }
 
-const urlSchemaHandler = (whenSelectedString: ErorMessageAndType): string => {
-    return `Yup.string().url('${whenSelectedString.errorMessage}')`;
-  };
+const urlSchemaHandler = (whenSelectedString: UrlType): string => {
+  const { errorMessage, isCustomUrl, customUrl } = whenSelectedString
+
+  let schema = `Yup.string().url('${errorMessage}')`;
+
+  if (isCustomUrl && customUrl) {
+    schema += `.test(
+      'is-custom-url',
+      'URL must end with ${customUrl}',
+      value => value ? value.endsWith('${customUrl}') : false
+    )`;
+  }
+
+  return schema;
+};
 
   const minMaxSchemaHandler=(whenSelectedString:PasswordMessageAndType)=>{
     let fieldSchema = "";
