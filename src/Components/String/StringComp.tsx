@@ -92,7 +92,7 @@ const EmailHandler=({formIndex} : FormIndexType)=>{
 const UrlHandler=({formIndex}:FormIndexType)=>{
     return <>
         <ValidationTextFieldMessage messageKey="URL" formikKey={setFieldValueFirstArg(formIndex,'whenSelectedString.errorMessage' as fieldKeyType)}/>  
-        <SwitchAndTextField swichLabel="Is Custom URL?" formIndex={formIndex} switchKeyName="whenSelectedString.isCustomUrl" keyName="whenSelectedString.customUrl" label="Enter Custom URL" placholder="Enter Custom URL" />  
+        <SwitchAndTextField swichLabel="Is Custom URL?" formIndex={formIndex} switchKeyName="whenSelectedString.isCustomUrl" keyName="whenSelectedString.customUrl" label="Enter Custom URL Domain" placholder="Enter Custom URL Domain" />  
     </>
 }
 

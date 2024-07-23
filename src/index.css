@@ -2,6 +2,16 @@ body{
     background-color: #EFF7F6;
 }
 
+@media screen and (max-width: 1280px) {
+    html {
+      font-size: 13.5px !important; /* Sets 1rem to 14px */
+    }
+  }
+
+  html {
+    font-size: 14px !important; /* Sets 1rem to 14px */
+  }
+
 .global_column_flex{
     display: flex;
     flex-direction: column;
