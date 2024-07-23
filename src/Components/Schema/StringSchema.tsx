@@ -27,7 +27,7 @@ const basicSchema = Yup.object().shape({
 const emailSchema =  Yup.object().shape({
     type: Yup.string().oneOf(['email']).required(),
     errorMessage: Yup.string().required('Email error message is required'),
-    customMail: Yup.string()
+    customMail: Yup.string().nullable()
       .test(
         'is-custom-email',
         'Email must end with the specified domain',
