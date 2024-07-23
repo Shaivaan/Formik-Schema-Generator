@@ -49,6 +49,11 @@ interface LabelPlaceholderType{
     placholder : string
 }
 
+interface SwitchKeyType{
+    switchKeyName:string
+    swichLabel:string
+}
+
 interface LabelWithTooltipType{
     label:string,
     tooltipTitle:string

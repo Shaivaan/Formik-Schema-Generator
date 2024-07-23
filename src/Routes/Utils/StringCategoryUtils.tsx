@@ -7,8 +7,8 @@ const minMaxLimitInitialValue = {
 const stringSelectedType = ['basic','email','password','url', 'min max'];
 const errorMessage = (message:string)=> {return {errorMessage : `Please enter valid ${message}`}};
 const basicInitValue = {type:'basic'};
-const emailInitValue = {...errorMessage('Email'),type:'email'};
-const urlInitValue = {...errorMessage('URL'),type:'url'};
+const emailInitValue = {...errorMessage('Email'),type:'email',isCustomEmail:false,customMail:null};
+const urlInitValue = {...errorMessage('URL'),type:'url',isCustomUrl:false,customUrl:null};
 const minMaxInitValue = {...errorMessage('Limit'),type : 'min max',...minMaxLimitInitialValue};
 const passwordInitValue = {
     ...errorMessage('Password'),

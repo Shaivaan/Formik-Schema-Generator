@@ -33,7 +33,7 @@ const createStringSchema = (
   if (whenSelectedString) {
     switch (whenSelectedString.type) {
       case "email":
-        fieldSchema = emailSchemaHandler(whenSelectedString as ErorMessageAndType);
+        fieldSchema = emailSchemaHandler(whenSelectedString as EmailType);
         break;
       case "password":
         fieldSchema += passwordSchemaHandler(whenSelectedString as PasswordMessageAndType);
@@ -250,11 +250,16 @@ ${schemaLines.join("\n")}
   return schemaString;
 };
 
-const emailSchemaHandler = (whenSelectedString:ErorMessageAndType)=>{
-     return `Yup.string().email('${
-        (whenSelectedString).errorMessage
-      }')`;
-}
+const emailSchemaHandler = (whenSelectedString: EmailType) => {
+  let schema = `Yup.string().email('${whenSelectedString.errorMessage}')`;
+
+  if (whenSelectedString.isCustomEmail && whenSelectedString.customMail) {
+    const domain = whenSelectedString.customMail.replace('.', '\\.');
+    schema += `.matches(/^[\\w.%+-]+@${domain}$/, 'Email must be from ${whenSelectedString.customMail}')`;
+  }
+
+  return schema;
+};
 
 const passwordSchemaHandler = (whenSelectedString:PasswordMessageAndType)=>{
     let fieldSchema = '';

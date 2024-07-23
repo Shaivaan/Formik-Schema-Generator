@@ -22,10 +22,29 @@ const basicSchema = Yup.object().shape({
     type: Yup.string().oneOf(['basic']).required(),
 });
 
-const emailSchema = Yup.object().shape({
+
+ 
+const emailSchema =  Yup.object().shape({
     type: Yup.string().oneOf(['email']).required(),
     errorMessage: Yup.string().required('Email error message is required'),
-})
+    customMail: Yup.string()
+      .test(
+        'is-custom-email',
+        'Email must end with the specified domain',
+        function (value) {
+          const { isCustomEmail, customMail } = this.parent;
+          if (isCustomEmail) {
+            return value ? value.endsWith(customMail) : false;
+          }
+          return true;
+        }
+      )
+      .matches(
+        /^[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/,
+        'Please enter a valid domain'
+      ),
+  });
+
 
 const limitSchema = () => {
   return {

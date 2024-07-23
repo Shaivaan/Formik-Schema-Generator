@@ -25,6 +25,13 @@ interface ErorMessageAndType{
     errorMessage : string
 }
 
+interface EmailType  {
+    errorMessage: string
+    type: string
+    isCustomEmail: boolean
+    customMail: string
+  };
+
 interface PasswordMessageAndType extends ErorMessageAndType{
         isNumberRequired: boolean,
         isUpperCaseRequired: boolean,

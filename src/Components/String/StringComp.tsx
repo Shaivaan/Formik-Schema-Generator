@@ -1,7 +1,7 @@
 import { useFormikContext } from "formik";
 import { CharLimitValidation, LabelWithTooltip, ReusableCheckBox, ValidationTextFieldMessage } from "../GeneralComponents/GeneralComponents";
 import { basicInitValue, emailInitValue, minMaxInitValue, passwordFormUtils, passwordInitValue, stringSelectedType, urlInitValue } from "../../Routes/Utils/StringCategoryUtils";
-import { FormControlLabel, Grid, Radio, RadioGroup, TextField } from "@mui/material";
+import { FormControlLabel, Grid, InputAdornment, Radio, RadioGroup, Switch, TextField } from "@mui/material";
 import { getNestedValue, setFieldValueFirstArg } from "../../Routes/Utils/HomeUtils";
 import { stringCategoryText } from "../../Routes/Utils/TooltipText";
 
@@ -66,7 +66,7 @@ const StringCategoryComponentsHandler=({stringType,formIndex} :StringCategoryCom
         return <PasswordValidation formIndex={formIndex}/>;    
 
         case 'email' : 
-        return <ValidationTextFieldMessage messageKey="Email" formikKey={setFieldValueFirstArg(formIndex,'whenSelectedString.errorMessage' as fieldKeyType)}/>    
+        return <EmailHandler formIndex={formIndex}/>
 
         case 'url' : 
         return <ValidationTextFieldMessage messageKey="URL" formikKey={setFieldValueFirstArg(formIndex,'whenSelectedString.errorMessage' as fieldKeyType)}/>    
@@ -80,6 +80,46 @@ const StringCategoryComponentsHandler=({stringType,formIndex} :StringCategoryCom
         default:
         return <></>
      }
+}
+
+const EmailHandler=({formIndex} : FormIndexType)=>{
+    return <>
+        <ValidationTextFieldMessage messageKey="Email" formikKey={setFieldValueFirstArg(formIndex,'whenSelectedString.errorMessage' as fieldKeyType)}/>    
+        <SwitchAndTextField swichLabel="Is Custom Email?" formIndex={formIndex} switchKeyName="whenSelectedString.isCustomEmail" keyName="whenSelectedString.customMail" label="Enter Custom Domain" placholder="Enter Custom Domain" />
+    </>
+}
+
+const SwitchAndTextField=({label,placholder,keyName,formIndex,switchKeyName} : LabelPlaceholderType & KeyNameType & FormIndexType & SwitchKeyType)=>{
+    const {values,setFieldValue,errors,touched} = useFormikContext<FormInitType>();
+    const isError = getNestedValue(setFieldValueFirstArg(formIndex,keyName as fieldKeyType),touched) &&  getNestedValue(setFieldValueFirstArg(formIndex,keyName as fieldKeyType),errors);
+    const handleTextFieldChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setFieldValue(setFieldValueFirstArg(formIndex,keyName as fieldKeyType),event.target.value);
+    }; 
+
+    const handleLimitDisableEnableChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setFieldValue(setFieldValueFirstArg(formIndex,switchKeyName as fieldKeyType),event.target.checked);
+    };
+
+
+    return <TextField
+    autoComplete="off"
+    variant="outlined"
+    placeholder={placholder}
+    label={placholder}
+    fullWidth
+    value={getNestedValue(setFieldValueFirstArg(formIndex,keyName as unknown as fieldKeyType),values)}
+    error={isError}
+    helperText={isError}
+    onChange={handleTextFieldChange}
+    disabled = {!getNestedValue(setFieldValueFirstArg(formIndex,switchKeyName as fieldKeyType),values)}
+    InputProps={{
+        endAdornment: (
+          <InputAdornment position="end">
+              <FormControlLabel control={<Switch onChange={handleLimitDisableEnableChange} checked = {getNestedValue(setFieldValueFirstArg(formIndex,switchKeyName as fieldKeyType),values)}  />} label={label} />
+          </InputAdornment>
+        )
+      }}
+/>
 }
 
 // String Types 
