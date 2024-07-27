@@ -1,7 +1,7 @@
 import { Box, Checkbox, Divider, FormControl, FormControlLabel, FormHelperText, Grid, IconButton, InputLabel, MenuItem, RadioGroup, Select, SelectChangeEvent, TextField } from "@mui/material";
 import "./Home.css";
 import { ArrayHelpers, FieldArray, Formik, useFormikContext } from "formik";
-import { createSchemaStringFromValues, eachKeyForm, formInitialValues, getNestedValue, setFieldValueFirstArg, typeValue } from "../Utils/HomeUtils";
+import { createSchemaStringFromValues, eachKeyForm, formInitialValues, formatCode, getNestedValue, setFieldValueFirstArg, typeValue } from "../Utils/HomeUtils";
 import { basicInitValue } from "../Utils/StringCategoryUtils";
 import { ChangeEvent, FormEvent, useRef } from "react";
 import { mainFormSchema } from "../../Components/Schema/MainFormSchema";
@@ -38,9 +38,9 @@ export const Home = () => {
             <Grid lg={10} md={10} sm={12} xs={12}>
                 <Formik
                     initialValues={formInitialValues}
-                    onSubmit={(values:FormInitType) => { 
+                    onSubmit={async(values:FormInitType) => { 
                         setIsProcessing(true);
-                        setSchemaContent(createSchemaStringFromValues(values.formInitialValues));
+                        setSchemaContent(await formatCode(createSchemaStringFromValues(values.formInitialValues)));
                         setSchemaModal(true);
                         setIsProcessing(false);
                     }}

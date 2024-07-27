@@ -11,7 +11,6 @@ const modalStyle = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: '60rem',
     bgcolor: 'background.paper',
     boxShadow: 24,
     p: 4,
@@ -68,7 +67,7 @@ const CharLimitValidation=({limit_type,formIndex,keyName}:CharLimitValidationTyp
 
     return <Box>
         <TextField
-            autoComplete="off"
+          autoComplete="off"
             variant="outlined"
             placeholder={`Enter ${limit_type} Limit`}
             label={`Enter ${limit_type} Limit`}
@@ -92,7 +91,7 @@ const CharLimitValidation=({limit_type,formIndex,keyName}:CharLimitValidationTyp
 
 
 const SchemaModal = () => {
-    const { isSchemaModal, schemaContent, setSchemaModal,setIsSnackbarVisible} = useStore();
+    const { isSchemaModal, schemaContent, setSchemaModal,setIsSnackbarVisible,setSchemaContent} = useStore();
   
     const handleClose = () => setSchemaModal(false);
   
@@ -120,18 +119,15 @@ const SchemaModal = () => {
 
           </Box>
           <Box
-            sx={{
-              mt: 2,
-              maxHeight: 300,
-              overflowY: 'auto',
-              bgcolor: '#f5f5f5',
-              p: 2,
-              borderRadius: 1,
-            }}
+            className = 'schema_show_container'
           >
-            <Typography id="modal-description" component="pre">
-              {schemaContent}
-            </Typography>
+            <TextField
+              variant="outlined"
+              multiline
+              value={schemaContent}
+              fullWidth
+              onChange={(event:React.ChangeEvent<HTMLInputElement>)=>setSchemaContent(event.target.value)}
+            />
           </Box>
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
             <Button variant="contained" color="primary" onClick={handleClose}>

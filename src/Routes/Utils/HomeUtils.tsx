@@ -1,4 +1,7 @@
 import { FormikErrors, FormikTouched } from "formik";
+import prettier from 'prettier/standalone';
+import babelPlugin from "prettier/plugins/babel";
+import estreePlugin from "prettier/plugins/estree";
 
 const eachKeyForm = {
   keyName: null,
@@ -250,6 +253,20 @@ ${schemaLines.join("\n")}
   return schemaString;
 };
 
+const formatCode=async(codeToFormat:string)=>{
+  try {
+    const formatted = await prettier.format(codeToFormat, {
+      parser: 'babel',
+      plugins: [babelPlugin,estreePlugin],
+      semi: true,
+      singleQuote: true,
+    });
+    return formatted;
+  } catch (error) {
+    return codeToFormat;
+  }
+}
+
 const emailSchemaHandler = (whenSelectedString: EmailType) => {
   let schema = `Yup.string().email('${whenSelectedString.errorMessage}')`;
 
@@ -336,5 +353,6 @@ export {
   setFieldValueFirstArg,
   eachKeyForm,
   createSchemaStringFromValues,
-  getNestedValue
+  getNestedValue,
+  formatCode
 };
